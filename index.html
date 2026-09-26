@@ -17,34 +17,27 @@
   <header class="capcalera">
     <div class="amplada">
       <h1>Gralla seca</h1>
-      <p>Carrega una partitura, escolta-la i mira quina digitació has de fer a cada nota.</p>
+      <p>Tria una cançó, escolta-la i mira quina digitació has de fer a cada nota.</p>
     </div>
   </header>
 
   <main class="amplada">
-    <section class="carrega" aria-labelledby="carrega-titol">
-      <h2 id="carrega-titol" class="visualment-amagat">Carrega una partitura</h2>
-      <label class="zona" id="zona">
-        <input type="file" id="fitxer" accept=".musicxml,.xml,.mxl" hidden>
-        <span class="zona-icona" aria-hidden="true">♪</span>
-        <span><strong>Tria una partitura</strong> o arrossega-la aquí</span>
-        <span class="zona-ajuda">Format MusicXML (.musicxml, .mxl, .xml)</span>
-      </label>
-      <div class="exemples">
-        <span>O prova un exemple:</span>
-        <button type="button" class="xip" data-exemple="escala-sol-major.musicxml">Escala de Sol</button>
-        <button type="button" class="xip" data-exemple="germa-jaume.musicxml">Germà Jaume</button>
-        <button type="button" class="xip" data-exemple="exercici-en-sol.musicxml">Exercici en Sol</button>
-        <button type="button" class="xip" data-exemple="escala-cromatica.musicxml">Escala cromàtica</button>
+    <section class="llibreria" aria-labelledby="llibreria-titol">
+      <div class="llibreria-cap">
+        <h2 id="llibreria-titol">Tria una cançó</h2>
+        <input type="search" id="cerca" placeholder="Cerca…" aria-label="Cerca una cançó" autocomplete="off">
       </div>
-      <details class="ajuda">
-        <summary>Tinc la partitura en PDF o en foto. Com la passo a MusicXML?</summary>
-        <ol>
-          <li>Instal·la <a href="https://musescore.org/ca" target="_blank" rel="noopener">MuseScore 4</a> (gratuït).</li>
-          <li>Obre el PDF amb <em>Fitxer → Importa PDF</em> (o fes servir <a href="https://audiveris.github.io/audiveris/" target="_blank" rel="noopener">Audiveris</a> per a fotos i PDF escanejats).</li>
-          <li>Revisa que les notes siguin correctes i corregeix les que s'hagin llegit malament.</li>
-          <li>Desa-la amb <em>Fitxer → Exporta → MusicXML</em> i carrega aquí el fitxer <code>.mxl</code> o <code>.musicxml</code>.</li>
-        </ol>
+      <div id="llista" class="llista" aria-live="polite"></div>
+      <p class="buit" id="llista-buida" hidden>No hi ha cap cançó que coincideixi amb la cerca.</p>
+
+      <details class="propia">
+        <summary>Tens un fitxer MusicXML propi?</summary>
+        <label class="zona" id="zona">
+          <input type="file" id="fitxer" accept=".musicxml,.xml,.mxl" hidden>
+          <span class="zona-icona" aria-hidden="true">♪</span>
+          <span><strong>Tria un fitxer</strong> o arrossega'l aquí</span>
+          <span class="zona-ajuda">Format MusicXML (.musicxml, .mxl, .xml)</span>
+        </label>
       </details>
     </section>
 

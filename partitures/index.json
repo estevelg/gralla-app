@@ -1,0 +1,6 @@
+[
+  { "id": "escala-sol-major", "titol": "Escala de Sol major", "fitxer": "escala-sol-major.musicxml", "categoria": "Exercicis", "nivell": "Inicial" },
+  { "id": "germa-jaume", "titol": "Germà Jaume", "fitxer": "germa-jaume.musicxml", "categoria": "Exercicis", "nivell": "Inicial", "notes": "Tradicional" },
+  { "id": "exercici-en-sol", "titol": "Exercici en Sol", "fitxer": "exercici-en-sol.musicxml", "categoria": "Exercicis", "nivell": "Mitjà", "notes": "Repeticions i lligadures" },
+  { "id": "escala-cromatica", "titol": "Escala cromàtica", "fitxer": "escala-cromatica.musicxml", "categoria": "Exercicis", "nivell": "Totes les digitacions" }
+]

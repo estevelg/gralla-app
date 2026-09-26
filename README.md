@@ -1,6 +1,6 @@
 # Gralla seca · Digitacions
 
-Web-app per a principiants de gralla seca: carregues una partitura en MusicXML i
+Web-app per a principiants de gralla seca: tries una cançó de la llibreria (o carregues un MusicXML propi) i
 - la pots escoltar (so de xeremia/shanai, oboè o flauta; velocitat ajustable, repetició),
 - veus el pentagrama original i, sota cada nota, el **nom** i el **dibuix de la digitació**,
 - la nota que sona es ressalta i la vista la segueix,
@@ -19,11 +19,19 @@ python3 -m http.server 8765 --directory gralla-app
 
 i obre <http://localhost:8765>.
 
-## Partitures en PDF o foto
+## Llibreria de partitures
 
-1. Obre el PDF amb **MuseScore 4** (*Fitxer → Importa PDF*) o amb **Audiveris** per a fotos i escanejats.
-2. Revisa i corregeix les notes que s'hagin llegit malament.
-3. *Fitxer → Exporta → MusicXML* (`.mxl` o `.musicxml`) i carrega el fitxer a l'app.
+Les cançons són a `partitures/`: un fitxer `.musicxml` per peça i el catàleg `partitures/index.json`:
+
+```json
+{ "id": "germa-jaume", "titol": "Germà Jaume", "fitxer": "germa-jaume.musicxml",
+  "categoria": "Exercicis", "nivell": "Inicial", "notes": "Tradicional" }
+```
+
+Cada peça té un enllaç directe: `https://estevelg.github.io/gralla-app/#/<id>`.
+
+Per afegir-ne una: transcriure-la a MusicXML, desar-la a `partitures/`, afegir-la a `index.json` i fer push.
+GitHub Pages s'actualitza sol en un parell de minuts.
 
 ## Publicar a GitHub Pages
 
@@ -41,6 +49,7 @@ i obre <http://localhost:8765>.
 | `js/render.js` | Pentagrama amb VexFlow + nom i digitació sota cada nota |
 | `js/player.js` | Reproducció amb Web Audio (smplr, sons General MIDI) |
 | `js/midi-export.js` | Exportació a fitxer MIDI |
-| `examples/` | Partitures d'exemple |
+| `js/library.js` | Llista de cançons, cercador i enllaços directes |
+| `partitures/` | Llibreria de partitures i catàleg `index.json` |
 
 Llibreries (per CDN): VexFlow 4, JSZip, smplr.

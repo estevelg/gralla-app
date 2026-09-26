@@ -4,11 +4,15 @@ import { getFingering, inRange, SO_REAL, LOWEST, HIGHEST } from './fingerings.js
 import { fingeringSVG } from './fingering-svg.js';
 import { Player } from './player.js';
 import { buildMidi, downloadMidi } from './midi-export.js';
+import { loadCatalog, fetchPiece, renderCatalog, markSelected } from './library.js';
 
 const $ = (sel) => document.querySelector(sel);
 
 const els = {
   zona: $('#zona'),
+  llista: $('#llista'),
+  llistaBuida: $('#llista-buida'),
+  cerca: $('#cerca'),
   fitxer: $('#fitxer'),
   error: $('#error'),
   obra: $('#obra'),
@@ -57,30 +61,54 @@ async function loadFile(file) {
   try {
     showError('');
     setScore(await readScoreFile(file));
+    markSelected(els.llista, null);
+    history.replaceState(null, '', location.pathname);
   } catch (err) {
     console.error(err);
     showError(err.message || "No s'ha pogut llegir la partitura.");
   }
 }
 
-async function loadExample(name) {
+let catalog = [];
+
+async function loadFromLibrary(entry, { scroll = true } = {}) {
   try {
     showError('');
-    const res = await fetch(`examples/${name}`);
-    if (!res.ok) throw new Error("No s'ha pogut carregar l'exemple.");
-    setScore(parseMusicXML(await res.text()));
+    const piece = parseMusicXML(await fetchPiece(entry));
+    piece.title = entry.titol;
+    if (location.hash !== `#/${entry.id}`) history.replaceState(null, '', `#/${entry.id}`);
+    markSelected(els.llista, entry.id);
+    setScore(piece, { scroll });
   } catch (err) {
     console.error(err);
     showError(err.message);
   }
 }
 
-function setScore(s) {
+function openFromHash({ scroll = true } = {}) {
+  const id = decodeURIComponent(location.hash.replace(/^#\/?/, ''));
+  const entry = id && catalog.find((e) => e.id === id);
+  if (entry) loadFromLibrary(entry, { scroll });
+}
+
+async function initLibrary() {
+  try {
+    catalog = await loadCatalog();
+    const filter = renderCatalog(els.llista, els.llistaBuida, catalog, (entry) => loadFromLibrary(entry));
+    els.cerca.addEventListener('input', () => filter(els.cerca.value));
+    openFromHash();
+  } catch (err) {
+    console.error(err);
+    showError(err.message);
+  }
+}
+
+function setScore(s, { scroll = true } = {}) {
   original = s;
   els.transposa.value = 0;
   els.obra.hidden = false;
   applyTransposition(0);
-  els.obra.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (scroll) els.obra.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function applyTransposition(semitones) {
@@ -197,7 +225,7 @@ els.zona.addEventListener('drop', (e) => {
   if (file) loadFile(file);
 });
 
-document.querySelectorAll('[data-exemple]').forEach((b) => b.addEventListener('click', () => loadExample(b.dataset.exemple)));
+window.addEventListener('hashchange', () => openFromHash());
 
 els.play.addEventListener('click', async () => {
   if (player.state === 'playing') { player.pause(); return; }
@@ -248,3 +276,4 @@ window.addEventListener('resize', () => {
 });
 
 buildTable();
+initLibrary();

@@ -98,8 +98,68 @@ a { color: var(--accent); }
   font-size: 1.05rem;
 }
 
-/* Càrrega */
-.carrega { margin: 16px 0 20px; }
+/* Llibreria */
+.llibreria { margin: 16px 0 20px; }
+.llibreria-cap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin-bottom: 8px;
+}
+.llibreria-cap h2 { margin: 0; font-size: 1.3rem; }
+#cerca {
+  flex: 0 1 280px;
+  min-width: 0;
+  font: inherit;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+}
+#cerca:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.categoria h3 {
+  margin: 14px 0 8px;
+  color: var(--ink-soft);
+  font-size: .8rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.targetes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 10px;
+}
+.targeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.targeta:hover { border-color: var(--accent); }
+.targeta:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.targeta.seleccionada {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  box-shadow: inset 4px 0 0 var(--accent);
+}
+.targeta-titol { font-weight: 800; }
+.targeta-meta { color: var(--ink-soft); font-size: .88rem; }
+.buit { color: var(--ink-soft); }
+
+.propia { margin-top: 18px; color: var(--ink-soft); }
+.propia summary { color: var(--ink); font-weight: 600; }
+.propia .zona { margin-top: 10px; }
 
 .zona {
   display: flex;
@@ -118,31 +178,7 @@ a { color: var(--accent); }
 .zona-icona { font-size: 1.8rem; line-height: 1; color: var(--accent); }
 .zona-ajuda { color: var(--ink-soft); font-size: .9rem; }
 
-.exemples {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  margin-top: 12px;
-  color: var(--ink-soft);
-  font-size: .95rem;
-}
-.xip {
-  font: inherit;
-  font-weight: 600;
-  padding: 6px 12px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--surface);
-  color: var(--ink);
-  cursor: pointer;
-}
-.xip:hover { border-color: var(--accent); color: var(--accent); }
-
 details summary { cursor: pointer; font-weight: 700; }
-.ajuda { margin-top: 12px; color: var(--ink-soft); }
-.ajuda summary { color: var(--ink); font-weight: 600; }
-.ajuda ol { margin: 8px 0 0; padding-left: 22px; }
 
 .error {
   padding: 12px 14px;
