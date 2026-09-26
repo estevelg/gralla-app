@@ -156,7 +156,8 @@ export function renderScore(container, score, { onNoteClick } = {}) {
           i += t.actual - 1;
         }
 
-        const groups = Beam.getDefaultBeamGroups(`${m.beats}/${m.beatType}`);
+        // En 2/2 s'agrupen les corxeres de negra en negra, més fàcil de llegir.
+        const groups = Beam.getDefaultBeamGroups(m.beatType === 2 ? '2/4' : `${m.beats}/${m.beatType}`);
         const beams = Beam.generateBeams(notes, { groups });
         new Formatter({ softmaxFactor: 4 }).joinVoices([voice]).formatToStave([voice], stave);
         voice.draw(ctx, stave);

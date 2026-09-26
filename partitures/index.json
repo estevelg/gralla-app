@@ -1,6 +1,10 @@
 [
-  { "id": "escala-sol-major", "titol": "Escala de Sol major", "fitxer": "escala-sol-major.musicxml", "categoria": "Exercicis", "nivell": "Inicial" },
-  { "id": "germa-jaume", "titol": "Germà Jaume", "fitxer": "germa-jaume.musicxml", "categoria": "Exercicis", "nivell": "Inicial", "notes": "Tradicional" },
-  { "id": "exercici-en-sol", "titol": "Exercici en Sol", "fitxer": "exercici-en-sol.musicxml", "categoria": "Exercicis", "nivell": "Mitjà", "notes": "Repeticions i lligadures" },
-  { "id": "escala-cromatica", "titol": "Escala cromàtica", "fitxer": "escala-cromatica.musicxml", "categoria": "Exercicis", "nivell": "Totes les digitacions" }
+  {"id": "polca-dours", "titol": "Polca d'ours", "fitxer": "polca-dours.musicxml", "categoria": "Repertori", "nivell": "Inicial", "notes": "1a gralla"},
+  {"id": "polca-dours-2a-gralla", "titol": "Polca d'ours (2a gralla)", "fitxer": "polca-dours-2a-gralla.musicxml", "categoria": "Repertori", "nivell": "Inicial", "notes": "2a gralla"},
+  {"id": "passi-ho-be", "titol": "Passi-ho bé", "fitxer": "passi-ho-be.musicxml", "categoria": "Repertori", "nivell": "Inicial", "notes": "Marxa · part A"},
+  {"id": "bella-ciao", "titol": "Bella ciao", "fitxer": "bella-ciao.musicxml", "categoria": "Repertori", "nivell": "Mitjà", "notes": "En Re menor"},
+  {"id": "escala-sol-major", "titol": "Escala de Sol major", "fitxer": "escala-sol-major.musicxml", "categoria": "Exercicis", "nivell": "Inicial"},
+  {"id": "germa-jaume", "titol": "Germà Jaume", "fitxer": "germa-jaume.musicxml", "categoria": "Exercicis", "nivell": "Inicial", "notes": "Tradicional"},
+  {"id": "exercici-en-sol", "titol": "Exercici en Sol", "fitxer": "exercici-en-sol.musicxml", "categoria": "Exercicis", "nivell": "Mitjà", "notes": "Repeticions i lligadures"},
+  {"id": "escala-cromatica", "titol": "Escala cromàtica", "fitxer": "escala-cromatica.musicxml", "categoria": "Exercicis", "nivell": "Totes les digitacions"}
 ]
