@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ca">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gralla seca · Digitacions</title>
+  <meta name="description" content="Carrega una partitura de gralla seca, escolta-la i mira la digitació de cada nota.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.5/build/cjs/vexflow.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <header class="capcalera">
+    <div class="amplada">
+      <h1>Gralla seca</h1>
+      <p>Carrega una partitura, escolta-la i mira quina digitació has de fer a cada nota.</p>
+    </div>
+  </header>
+
+  <main class="amplada">
+    <section class="carrega" aria-labelledby="carrega-titol">
+      <h2 id="carrega-titol" class="visualment-amagat">Carrega una partitura</h2>
+      <label class="zona" id="zona">
+        <input type="file" id="fitxer" accept=".musicxml,.xml,.mxl" hidden>
+        <span class="zona-icona" aria-hidden="true">♪</span>
+        <span><strong>Tria una partitura</strong> o arrossega-la aquí</span>
+        <span class="zona-ajuda">Format MusicXML (.musicxml, .mxl, .xml)</span>
+      </label>
+      <div class="exemples">
+        <span>O prova un exemple:</span>
+        <button type="button" class="xip" data-exemple="escala-sol-major.musicxml">Escala de Sol</button>
+        <button type="button" class="xip" data-exemple="germa-jaume.musicxml">Germà Jaume</button>
+        <button type="button" class="xip" data-exemple="exercici-en-sol.musicxml">Exercici en Sol</button>
+        <button type="button" class="xip" data-exemple="escala-cromatica.musicxml">Escala cromàtica</button>
+      </div>
+      <details class="ajuda">
+        <summary>Tinc la partitura en PDF o en foto. Com la passo a MusicXML?</summary>
+        <ol>
+          <li>Instal·la <a href="https://musescore.org/ca" target="_blank" rel="noopener">MuseScore 4</a> (gratuït).</li>
+          <li>Obre el PDF amb <em>Fitxer → Importa PDF</em> (o fes servir <a href="https://audiveris.github.io/audiveris/" target="_blank" rel="noopener">Audiveris</a> per a fotos i PDF escanejats).</li>
+          <li>Revisa que les notes siguin correctes i corregeix les que s'hagin llegit malament.</li>
+          <li>Desa-la amb <em>Fitxer → Exporta → MusicXML</em> i carrega aquí el fitxer <code>.mxl</code> o <code>.musicxml</code>.</li>
+        </ol>
+      </details>
+    </section>
+
+    <p class="error" id="error" role="alert" hidden></p>
+
+    <section class="obra" id="obra" hidden>
+      <div class="reproductor" id="reproductor">
+        <div class="reproductor-fila">
+          <button type="button" class="boto-play" id="play" aria-label="Reprodueix">
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="icona-play"><path d="M8 5.5v13l11-6.5z"/></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="icona-pausa"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
+          </button>
+          <button type="button" class="boto" id="atura" aria-label="Atura i torna a l'inici">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10H7z"/></svg>
+          </button>
+          <div class="titol-obra">
+            <h2 id="titol"></h2>
+            <span class="estat" id="estat" aria-live="polite"></span>
+          </div>
+        </div>
+        <div class="reproductor-fila controls">
+          <label class="tempo">
+            <span class="etiqueta">Velocitat</span>
+            <input type="range" id="tempo" min="40" max="130" step="5" value="100">
+            <output id="tempo-valor">100 %</output>
+          </label>
+          <label class="check"><input type="checkbox" id="bucle"> Repeteix</label>
+          <label class="timbre">
+            <span class="etiqueta">So</span>
+            <select id="timbre" aria-label="So">
+              <option value="shanai">Gralla (xeremia)</option>
+              <option value="oboe">Oboè</option>
+              <option value="recorder">Flauta</option>
+            </select>
+          </label>
+          <button type="button" class="boto-text" id="midi"><span class="etiqueta">Descarrega </span>MIDI</button>
+        </div>
+      </div>
+
+      <div class="avis" id="avis" hidden></div>
+
+      <div class="llegenda" aria-label="Llegenda de la digitació">
+        <span><svg viewBox="0 0 14 14" width="14" height="14"><circle class="f-tancat" cx="7" cy="7" r="5.5"/></svg> forat tancat</span>
+        <span><svg viewBox="0 0 14 14" width="14" height="14"><circle class="f-obert" cx="7" cy="7" r="5.5"/></svg> forat obert</span>
+        <span><svg viewBox="0 0 14 14" width="14" height="14"><circle class="f-obert" cx="7" cy="7" r="5.5"/><path class="f-tancat" d="M7,1.5 A5.5,5.5 0 0 0 7,12.5 Z"/></svg> mig forat</span>
+        <span>El forat de dalt a l'esquerra és el del <strong>polze</strong> (darrere). A dalt, mà esquerra; a baix, mà dreta.</span>
+        <span><span class="bufa">fort</span> notes agudes: bufa amb més pressió</span>
+      </div>
+
+      <div class="partitura" id="partitura"></div>
+      <p class="pista">Toca una nota o la seva digitació per escoltar-la i començar a reproduir des d'allà.</p>
+    </section>
+
+    <details class="taula" id="taula">
+      <summary>Taula de digitacions de la gralla</summary>
+      <div class="taula-graella" id="taula-graella"></div>
+      <p class="font">Digitacions segons la taula de la gralla Bessó (<a href="https://www.pacobesso.net" target="_blank" rel="noopener">pacobesso.net</a>). Per a Re♯ i La♯ es mostra la posició normal.</p>
+    </details>
+
+    <details class="avancat">
+      <summary>Opcions avançades</summary>
+      <label>Transposa la notació
+        <input type="number" id="transposa" min="-12" max="12" step="1" value="0"> semitons
+      </label>
+      <p class="nota-petita">Útil si la partitura està escrita en un altre to i moltes notes surten fora del registre de la gralla.</p>
+    </details>
+  </main>
+
+  <footer class="peu amplada">
+    <p>Web-app per a principiants de gralla seca.</p>
+  </footer>
+</body>
+</html>
