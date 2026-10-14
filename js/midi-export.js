@@ -15,15 +15,18 @@ export function buildMidi(events, tempoBpm, instrument = 'shanai', title = '') {
   const name = [...new TextEncoder().encode(title.slice(0, 100))];
   msgs.push([0, [0xff, 0x03, ...varLen(name.length), ...name]]);
   msgs.push([0, [0xff, 0x51, 0x03, (usPerQ >> 16) & 0xff, (usPerQ >> 8) & 0xff, usPerQ & 0xff]]);
-  msgs.push([0, [0xc0, PROGRAMS[instrument] ?? 111]]);
+  // Cada veu té el seu canal, perquè dues notes iguals alhora no es tallin.
+  const voices = Math.min(Math.max(events.marks.length, 1), 16);
+  for (let ch = 0; ch < voices; ch++) msgs.push([0, [0xc0 | ch, PROGRAMS[instrument] ?? 111]]);
   for (const s of events.sounds) {
     const on = Math.round(s.start * PPQ);
     const off = Math.max(on + 1, Math.round((s.start + s.dur) * PPQ) - 12);
-    msgs.push([on, [0x90, s.midi, 100]]);
-    msgs.push([off, [0x80, s.midi, 0]]);
+    const ch = Math.min(s.voice || 0, 15);
+    msgs.push([on, [0x90 | ch, s.midi, 100]]);
+    msgs.push([off, [0x80 | ch, s.midi, 0]]);
   }
   // Els note-off abans dels note-on quan coincideixen en el temps.
-  msgs.sort((a, b) => a[0] - b[0] || (a[1][0] === 0x80 ? -1 : 0) - (b[1][0] === 0x80 ? -1 : 0));
+  msgs.sort((a, b) => a[0] - b[0] || ((a[1][0] & 0xf0) === 0x80 ? -1 : 0) - ((b[1][0] & 0xf0) === 0x80 ? -1 : 0));
 
   const track = [];
   let last = 0;

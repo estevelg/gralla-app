@@ -62,18 +62,19 @@ function measureMinWidth(m) {
 }
 
 // Reparteix els compassos en files segons l'amplada disponible.
-function layoutRows(measures, width) {
+// minOf(m) és l'amplada mínima del compàs (la més gran entre totes les veus).
+function layoutRows(measures, width, minOf) {
   const rows = [];
   let row = [];
   let used = 0;
   measures.forEach((m, i) => {
-    const inline = measureMinWidth(m) + headerWidth(m, false, i === 0);
+    const inline = minOf(m) + headerWidth(m, false, i === 0);
     if (row.length && used + inline > width) {
       rows.push(row);
       row = [];
       used = 0;
     }
-    const min = measureMinWidth(m) + headerWidth(m, row.length === 0, i === 0);
+    const min = minOf(m) + headerWidth(m, row.length === 0, i === 0);
     row.push({ m, min });
     used += min;
   });
@@ -82,142 +83,160 @@ function layoutRows(measures, width) {
 }
 
 /**
- * Dibuixa la partitura dins de `container`.
- * Retorna un Map id → { card, group, note } per poder ressaltar i fer clic.
+ * Dibuixa la partitura dins de `container`: una banda (pentagrama + digitacions) per veu
+ * i fila, amb els compassos alineats entre veus.
+ * `voices` és una llista de { nom, score }; totes amb els mateixos compassos.
+ * Retorna un Map id → { card, group, note, row } per poder ressaltar i fer clic.
  */
-export function renderScore(container, score, { onNoteClick } = {}) {
+export function renderScore(container, voices, { onNoteClick } = {}) {
   const {
     Renderer, Stave, Voice, Formatter, Accidental, Beam, Tuplet, StaveTie, Barline, VoltaType,
   } = VF();
   container.innerHTML = '';
   const width = Math.max(300, container.clientWidth);
-  const rows = layoutRows(score.measures, width - 2 * PAD_X);
+  const base = voices[0].score.measures;
+  const minOf = (m) => Math.max(...voices.map((v) => measureMinWidth(v.score.measures[m.index])));
+  const rows = layoutRows(base, width - 2 * PAD_X, minOf);
   const index = new Map();
-  let pendingTie = null; // nota VexFlow amb lligadura oberta
+  const pendingTies = voices.map(() => null); // nota VexFlow amb lligadura oberta, per veu
 
   rows.forEach((row, rIdx) => {
     const rowEl = document.createElement('div');
     rowEl.className = 'fila';
-    rowEl.style.height = `${STAFF_H + CARD_H}px`;
-    const staffEl = document.createElement('div');
-    staffEl.className = 'pentagrama';
-    rowEl.append(staffEl);
     container.append(rowEl);
-
-    const renderer = new Renderer(staffEl, Renderer.Backends.SVG);
-    renderer.resize(width, STAFF_H);
-    const ctx = renderer.getContext();
 
     const minTotal = row.reduce((s, r) => s + r.min, 0);
     const isLast = rIdx === rows.length - 1;
     const stretch = isLast && minTotal < width * 0.7 ? 1 : (width - 2 * PAD_X) / minTotal;
-    let x = PAD_X;
-    const ties = [];
-    const rowNotes = [];
 
-    row.forEach(({ m, min }, cIdx) => {
-      const w = min * stretch;
-      const stave = new Stave(x, STAVE_Y, w);
-      const first = m.index === 0;
-      if (cIdx === 0) {
-        stave.addClef('treble');
-        if (m.fifths) stave.addKeySignature(KEYS[m.fifths]);
-        if (m.index > 0) stave.setMeasure(Number(m.number) || m.index + 1);
-      } else if (m.keyChange) {
-        stave.addKeySignature(KEYS[m.fifths]);
+    voices.forEach(({ nom, score }, vIdx) => {
+      const bandEl = document.createElement('div');
+      bandEl.className = 'veu';
+      bandEl.style.height = `${STAFF_H + CARD_H}px`;
+      const staffEl = document.createElement('div');
+      staffEl.className = 'pentagrama';
+      bandEl.append(staffEl);
+      if (voices.length > 1) {
+        const label = document.createElement('span');
+        label.className = 'veu-nom';
+        label.textContent = nom;
+        bandEl.append(label);
       }
-      if (first || m.timeChange) stave.addTimeSignature(`${m.beats}/${m.beatType}`);
-      if (m.repeatStart) stave.setBegBarType(Barline.type.REPEAT_BEGIN);
-      if (m.repeatEnd) stave.setEndBarType(Barline.type.REPEAT_END);
-      else if (m.index === score.measures.length - 1) stave.setEndBarType(Barline.type.END);
-      if (m.endings) {
-        const type = m.endingStart && m.endingStop ? VoltaType.BEGIN_END
-          : m.endingStart ? VoltaType.BEGIN
-            : m.endingStop ? VoltaType.END : VoltaType.MID;
-        stave.setVoltaType(type, m.endingStart ? m.endingLabel : '', -8);
-      }
-      stave.setContext(ctx).draw();
+      rowEl.append(bandEl);
 
-      const notes = makeStaveNotes(m);
-      if (notes.length) {
-        const voice = new Voice({ num_beats: m.beats, beat_value: m.beatType }).setMode(Voice.Mode.SOFT);
-        voice.addTickables(notes);
-        Accidental.applyAccidentals([voice], KEYS[m.fifths]);
+      const renderer = new Renderer(staffEl, Renderer.Backends.SVG);
+      renderer.resize(width, STAFF_H);
+      const ctx = renderer.getContext();
 
-        // Tresets i altres grups irregulars.
-        const tuplets = [];
-        for (let i = 0; i < m.notes.length; i++) {
-          const t = m.notes[i].tuplet;
-          if (!t) continue;
-          const group = notes.slice(i, i + t.actual);
-          if (group.length === t.actual) {
-            tuplets.push(new Tuplet(group, { num_notes: t.actual, notes_occupied: t.normal }));
-          }
-          i += t.actual - 1;
+      let x = PAD_X;
+      const ties = [];
+      const rowNotes = [];
+
+      row.forEach(({ m: m0, min }, cIdx) => {
+        const m = score.measures[m0.index];
+        const w = min * stretch;
+        const stave = new Stave(x, STAVE_Y, w);
+        const first = m.index === 0;
+        if (cIdx === 0) {
+          stave.addClef('treble');
+          if (m.fifths) stave.addKeySignature(KEYS[m.fifths]);
+          if (m.index > 0 && vIdx === 0) stave.setMeasure(Number(m.number) || m.index + 1);
+        } else if (m.keyChange) {
+          stave.addKeySignature(KEYS[m.fifths]);
         }
+        if (first || m.timeChange) stave.addTimeSignature(`${m.beats}/${m.beatType}`);
+        if (m.repeatStart) stave.setBegBarType(Barline.type.REPEAT_BEGIN);
+        if (m.repeatEnd) stave.setEndBarType(Barline.type.REPEAT_END);
+        else if (m.index === score.measures.length - 1) stave.setEndBarType(Barline.type.END);
+        if (m.endings) {
+          const type = m.endingStart && m.endingStop ? VoltaType.BEGIN_END
+            : m.endingStart ? VoltaType.BEGIN
+              : m.endingStop ? VoltaType.END : VoltaType.MID;
+          stave.setVoltaType(type, m.endingStart ? m.endingLabel : '', -8);
+        }
+        stave.setContext(ctx).draw();
 
-        // En 2/2 s'agrupen les corxeres de negra en negra, més fàcil de llegir.
-        const groups = Beam.getDefaultBeamGroups(m.beatType === 2 ? '2/4' : `${m.beats}/${m.beatType}`);
-        const beams = Beam.generateBeams(notes, { groups });
-        new Formatter({ softmaxFactor: 4 }).joinVoices([voice]).formatToStave([voice], stave);
-        voice.draw(ctx, stave);
-        beams.forEach((b) => b.setContext(ctx).draw());
-        tuplets.forEach((t) => t.setContext(ctx).draw());
+        const notes = makeStaveNotes(m);
+        if (notes.length) {
+          const voice = new Voice({ num_beats: m.beats, beat_value: m.beatType }).setMode(Voice.Mode.SOFT);
+          voice.addTickables(notes);
+          Accidental.applyAccidentals([voice], KEYS[m.fifths]);
 
-        m.notes.forEach((n, i) => {
-          const sn = notes[i];
-          if (n.isRest) { pendingTie = null; }
-          else {
-            if (n.tieStop && pendingTie) ties.push([pendingTie, sn]);
-            pendingTie = n.tieStart ? sn : null;
+          // Tresets i altres grups irregulars.
+          const tuplets = [];
+          for (let i = 0; i < m.notes.length; i++) {
+            const t = m.notes[i].tuplet;
+            if (!t) continue;
+            const group = notes.slice(i, i + t.actual);
+            if (group.length === t.actual) {
+              tuplets.push(new Tuplet(group, { num_notes: t.actual, notes_occupied: t.normal }));
+            }
+            i += t.actual - 1;
           }
-          rowNotes.push({ n, sn });
-        });
-      }
-      x += w;
-    });
 
-    // Lligadures (també les que travessen el canvi de fila).
-    ties.forEach(([a, b]) => {
-      const sameRow = rowNotes.some((r) => r.sn === a);
-      new StaveTie({
-        first_note: sameRow ? a : null,
-        last_note: b,
-        first_indices: [0],
-        last_indices: [0],
-      }).setContext(ctx).draw();
-    });
-    if (pendingTie && rowNotes.some((r) => r.sn === pendingTie)) {
-      new StaveTie({ first_note: pendingTie, last_note: null, first_indices: [0], last_indices: [0] })
-        .setContext(ctx).draw();
-    }
+          // En 2/2 s'agrupen les corxeres de negra en negra, més fàcil de llegir.
+          const groups = Beam.getDefaultBeamGroups(m.beatType === 2 ? '2/4' : `${m.beats}/${m.beatType}`);
+          const beams = Beam.generateBeams(notes, { groups });
+          new Formatter({ softmaxFactor: 4 }).joinVoices([voice]).formatToStave([voice], stave);
+          voice.draw(ctx, stave);
+          beams.forEach((b) => b.setContext(ctx).draw());
+          tuplets.forEach((t) => t.setContext(ctx).draw());
 
-    // Targetes amb el nom i la digitació de cada nota.
-    rowNotes.forEach(({ n, sn }) => {
-      const group = staffEl.querySelector(`#vf-nota-${n.id}`);
-      const entry = { group, note: n, row: rowEl };
-      if (!n.isRest) {
-        const cx = (sn.getNoteHeadBeginX() + sn.getNoteHeadEndX()) / 2;
-        const card = document.createElement('button');
-        card.type = 'button';
-        card.className = 'nota';
-        card.dataset.id = n.id;
-        card.style.left = `${cx}px`;
-        card.style.top = `${STAFF_H}px`;
-        const fing = getFingering(n.midi);
-        if (!fing) card.classList.add('fora');
-        if (n.tieStop) card.classList.add('lligada');
-        card.innerHTML = `<span class="nom">${noteName(n)}</span>${fingeringSVG(fing)}${fing?.overblow ? '<span class="bufa" title="Bufa amb més pressió">fort</span>' : ''}`;
-        card.title = fing ? `${noteName(n)}${fing.overblow ? ' (agut: bufa amb més pressió)' : ''}` : `${noteName(n)}: fora del registre de la gralla`;
-        card.addEventListener('click', () => onNoteClick?.(n));
-        rowEl.append(card);
-        entry.card = card;
+          m.notes.forEach((n, i) => {
+            const sn = notes[i];
+            if (n.isRest) { pendingTies[vIdx] = null; }
+            else {
+              if (n.tieStop && pendingTies[vIdx]) ties.push([pendingTies[vIdx], sn]);
+              pendingTies[vIdx] = n.tieStart ? sn : null;
+            }
+            rowNotes.push({ n, sn });
+          });
+        }
+        x += w;
+      });
+
+      // Lligadures (també les que travessen el canvi de fila).
+      ties.forEach(([a, b]) => {
+        const sameRow = rowNotes.some((r) => r.sn === a);
+        new StaveTie({
+          first_note: sameRow ? a : null,
+          last_note: b,
+          first_indices: [0],
+          last_indices: [0],
+        }).setContext(ctx).draw();
+      });
+      if (pendingTies[vIdx] && rowNotes.some((r) => r.sn === pendingTies[vIdx])) {
+        new StaveTie({ first_note: pendingTies[vIdx], last_note: null, first_indices: [0], last_indices: [0] })
+          .setContext(ctx).draw();
       }
-      if (group) {
-        group.style.cursor = 'pointer';
-        group.addEventListener('click', () => onNoteClick?.(n));
-      }
-      index.set(n.id, entry);
+
+      // Targetes amb el nom i la digitació de cada nota.
+      rowNotes.forEach(({ n, sn }) => {
+        const group = staffEl.querySelector(`#vf-nota-${n.id}`);
+        const entry = { group, note: n, row: rowEl };
+        if (!n.isRest) {
+          const cx = (sn.getNoteHeadBeginX() + sn.getNoteHeadEndX()) / 2;
+          const card = document.createElement('button');
+          card.type = 'button';
+          card.className = 'nota';
+          card.dataset.id = n.id;
+          card.style.left = `${cx}px`;
+          card.style.top = `${STAFF_H}px`;
+          const fing = getFingering(n.midi);
+          if (!fing) card.classList.add('fora');
+          if (n.tieStop) card.classList.add('lligada');
+          card.innerHTML = `<span class="nom">${noteName(n)}</span>${fingeringSVG(fing)}${fing?.overblow ? '<span class="bufa" title="Bufa amb més pressió">fort</span>' : ''}`;
+          card.title = fing ? `${noteName(n)}${fing.overblow ? ' (agut: bufa amb més pressió)' : ''}` : `${noteName(n)}: fora del registre de la gralla`;
+          card.addEventListener('click', () => onNoteClick?.(n));
+          bandEl.append(card);
+          entry.card = card;
+        }
+        if (group) {
+          group.style.cursor = 'pointer';
+          group.addEventListener('click', () => onNoteClick?.(n));
+        }
+        index.set(n.id, entry);
+      });
     });
   });
 

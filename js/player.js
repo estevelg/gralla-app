@@ -7,32 +7,39 @@ const SMPLR_URL = 'https://cdn.jsdelivr.net/npm/smplr@1.0.0/+esm';
 const LOOKAHEAD = 0.25; // segons programats per avançat
 const TICK_MS = 25;
 
-// Esdeveniments en negres (quarter notes) des de l'inici.
-//  sounds: notes que sonen (les lligadures s'ajunten en una sola nota)
-//  marks:  què cal ressaltar a cada moment (nota o silenci de la partitura)
-export function buildEvents(score, soRealSemitones = 0) {
+// Esdeveniments en negres (quarter notes) des de l'inici, per a una o més veus.
+//  sounds: notes que sonen de totes les veus (les lligadures s'ajunten en una sola nota)
+//  marks:  per veu, què cal ressaltar a cada moment (nota o silenci de la partitura)
+export function buildEvents(voices, soRealSemitones = 0) {
   const sounds = [];
   const marks = [];
-  let t = 0;
-  let open = null; // nota lligada pendent
-  for (const mi of unrollMeasures(score.measures)) {
-    for (const n of score.measures[mi].notes) {
-      marks.push({ start: t, dur: n.durQ, id: n.id });
-      if (!n.isRest) {
-        if (n.tieStop && open && open.midi === n.midi + soRealSemitones) {
-          open.dur += n.durQ;
+  let totalQ = 0;
+  voices.forEach((score, voice) => {
+    const voiceMarks = [];
+    let t = 0;
+    let open = null; // nota lligada pendent
+    for (const mi of unrollMeasures(score.measures)) {
+      for (const n of score.measures[mi].notes) {
+        voiceMarks.push({ start: t, dur: n.durQ, id: n.id });
+        if (!n.isRest) {
+          if (n.tieStop && open && open.midi === n.midi + soRealSemitones) {
+            open.dur += n.durQ;
+          } else {
+            open = { start: t, dur: n.durQ, midi: n.midi + soRealSemitones, voice };
+            sounds.push(open);
+          }
+          if (!n.tieStart) open = null;
         } else {
-          open = { start: t, dur: n.durQ, midi: n.midi + soRealSemitones };
-          sounds.push(open);
+          open = null;
         }
-        if (!n.tieStart) open = null;
-      } else {
-        open = null;
+        t += n.durQ;
       }
-      t += n.durQ;
     }
-  }
-  return { sounds, marks, totalQ: t };
+    marks.push(voiceMarks);
+    totalQ = Math.max(totalQ, t);
+  });
+  sounds.sort((a, b) => a.start - b.start);
+  return { sounds, marks, totalQ };
 }
 
 // Síntesi senzilla (per si no es pot descarregar el so de mostra).
@@ -70,7 +77,7 @@ function fallbackSynth(ctx) {
 
 export class Player {
   constructor({ onMark, onState, onStatus }) {
-    this.onMark = onMark;       // (id | null) nota a ressaltar
+    this.onMark = onMark;       // (ids[]) notes a ressaltar, una per veu
     this.onState = onState;     // ('playing' | 'paused' | 'stopped')
     this.onStatus = onStatus;   // text d'estat (càrrega del so)
     this.ctx = null;
@@ -82,13 +89,14 @@ export class Player {
     this.loop = false;
     this.state = 'stopped';
     this.positionQ = 0;
-    this.currentMark = null;
+    this.currentMarks = [];
   }
 
-  setScore(score, soRealSemitones) {
+  // voices: partitures (una per veu) que sonen alhora.
+  setScore(voices, soRealSemitones) {
     this.stop();
-    this.events = buildEvents(score, soRealSemitones);
-    this.baseTempo = score.tempo;
+    this.events = buildEvents(voices, soRealSemitones);
+    this.baseTempo = voices[0].tempo;
   }
 
   get secPerQ() { return 60 / (this.baseTempo * this.tempoFactor); }
@@ -179,20 +187,24 @@ export class Player {
 
   updateMark() {
     const q = this.currentQ();
-    const marks = this.events.marks;
-    let id = null;
-    // Cerca binària de l'últim esdeveniment que ha començat.
-    let lo = 0;
-    let hi = marks.length - 1;
-    while (lo <= hi) {
-      const mid = (lo + hi) >> 1;
-      if (marks[mid].start <= q) { id = marks[mid].id; lo = mid + 1; } else hi = mid - 1;
-    }
-    if (q < 0) id = null;
-    if (id !== this.currentMark) {
-      this.currentMark = id;
-      this.onMark?.(id);
-    }
+    const ids = this.events.marks.map((voiceMarks) => {
+      let id = null;
+      // Cerca binària de l'últim esdeveniment que ha començat.
+      let lo = 0;
+      let hi = voiceMarks.length - 1;
+      while (lo <= hi) {
+        const mid = (lo + hi) >> 1;
+        if (voiceMarks[mid].start <= q) { id = voiceMarks[mid].id; lo = mid + 1; } else hi = mid - 1;
+      }
+      return q < 0 ? null : id;
+    }).filter(Boolean);
+    this.setMarks(ids);
+  }
+
+  setMarks(ids) {
+    if (ids.join() === this.currentMarks.join()) return;
+    this.currentMarks = ids;
+    this.onMark?.(ids);
   }
 
   halt() {
@@ -212,21 +224,19 @@ export class Player {
     if (this.state === 'playing') this.halt();
     this.state = 'stopped';
     this.positionQ = 0;
-    this.currentMark = null;
-    this.onMark?.(null);
+    this.setMarks([]);
     this.onState?.('stopped');
   }
 
   // Comença a sonar des d'una nota concreta (per id de la partitura).
   seekToMark(id) {
-    const mark = this.events.marks.find((m) => m.id === id);
+    const mark = this.events.marks.flat().find((m) => m.id === id);
     if (!mark) return;
     const wasPlaying = this.state === 'playing';
     if (wasPlaying) this.halt();
     this.state = 'paused';
     this.positionQ = mark.start;
-    this.currentMark = id;
-    this.onMark?.(id);
+    this.setMarks([id]);
     if (wasPlaying) this.play(mark.start);
     else this.onState?.('paused');
   }

@@ -29,12 +29,14 @@ const els = {
   partitura: $('#partitura'),
   taula: $('#taula-graella'),
   transposa: $('#transposa'),
+  veus: $('#veus'),
 };
 
-let original = null;   // partitura tal com s'ha llegit
-let score = null;      // partitura (transposada si cal)
+let piece = null;      // cançó tal com s'ha llegit: { title, voices: [{ nom, score }] }
+let selection = 0;     // veu que es mostra: índex de veu o 'totes'
+let shown = [];        // veus que es mostren i sonen (transposades si cal)
 let index = new Map(); // id de nota → elements dibuixats
-let active = null;
+let active = [];
 
 const player = new Player({
   onMark: highlight,
@@ -45,9 +47,11 @@ const player = new Player({
   onStatus: (text) => { els.estat.textContent = text || tempoText(); },
 });
 
+const baseTempo = () => shown[0].score.tempo;
+
 function tempoText() {
-  if (!score) return '';
-  return `♩ = ${Math.round(score.tempo * player.tempoFactor)}`;
+  if (!shown.length) return '';
+  return `♩ = ${Math.round(baseTempo() * player.tempoFactor)}`;
 }
 
 // ---------- Càrrega ----------
@@ -60,7 +64,9 @@ function showError(msg) {
 async function loadFile(file) {
   try {
     showError('');
-    setScore(await readScoreFile(file));
+    const score = await readScoreFile(file);
+    currentEntry = null;
+    setPiece({ title: score.title, voices: [{ nom: 'Gralla', score: tagVoice(score, 0) }] }, 0);
     markSelected(els.llista, null);
     history.replaceState(null, '', location.pathname);
   } catch (err) {
@@ -71,24 +77,63 @@ async function loadFile(file) {
 
 let catalog = [];
 
-async function loadFromLibrary(entry, { scroll = true } = {}) {
+// Identificadors de nota únics per veu (les veus comparteixen la mateixa pàgina).
+function tagVoice(score, v) {
+  for (const m of score.measures) for (const n of m.notes) n.id = `v${v}-${n.id}`;
+  return score;
+}
+
+function hashFor(entry, sel) {
+  const suffix = sel === 'totes' ? '/totes' : sel > 0 ? `/${sel + 1}` : '';
+  return `#/${entry.id}${suffix}`;
+}
+
+async function loadFromLibrary(entry, { scroll = true, voice = 0 } = {}) {
   try {
     showError('');
-    const piece = parseMusicXML(await fetchPiece(entry));
-    piece.title = entry.titol;
-    if (location.hash !== `#/${entry.id}`) history.replaceState(null, '', `#/${entry.id}`);
+    const loaded = await fetchPiece(entry);
+    const voices = loaded.map(({ nom, xml }, i) => ({ nom, score: tagVoice(parseMusicXML(xml), i) }));
+    if (voices.some((v) => v.score.measures.length !== voices[0].score.measures.length)) {
+      throw new Error(`Les veus de «${entry.titol}» no tenen el mateix nombre de compassos.`);
+    }
+    currentEntry = entry;
+    if (location.hash !== hashFor(entry, voice)) history.replaceState(null, '', hashFor(entry, voice));
     markSelected(els.llista, entry.id);
-    setScore(piece, { scroll });
+    setPiece({ title: entry.titol, voices }, voice, { scroll });
   } catch (err) {
     console.error(err);
     showError(err.message);
   }
 }
 
+let currentEntry = null;
+
+// Troba la cançó i la veu d'un enllaç: #/<id>, #/<id>/2 o #/<id>/totes
+// (també s'accepta l'id antic d'una veu, p. ex. #/polca-dours-2a-gralla).
+function parseHash() {
+  const [id, veu] = decodeURIComponent(location.hash.replace(/^#\/?/, '')).split('/');
+  if (!id) return null;
+  let entry = catalog.find((e) => e.id === id);
+  let voice = 0;
+  if (entry) {
+    const n = entry.veus?.length || 1;
+    if (veu === 'totes' && n > 1) voice = 'totes';
+    else if (Number(veu) >= 1 && Number(veu) <= n) voice = Number(veu) - 1;
+  } else {
+    entry = catalog.find((e) => e.veus?.some((v) => v.id === id));
+    if (entry) voice = entry.veus.findIndex((v) => v.id === id);
+  }
+  return entry ? { entry, voice } : null;
+}
+
 function openFromHash({ scroll = true } = {}) {
-  const id = decodeURIComponent(location.hash.replace(/^#\/?/, ''));
-  const entry = id && catalog.find((e) => e.id === id);
-  if (entry) loadFromLibrary(entry, { scroll });
+  const target = parseHash();
+  if (!target) return;
+  if (target.entry === currentEntry && piece) {
+    selectVoice(target.voice);
+  } else {
+    loadFromLibrary(target.entry, { scroll, voice: target.voice });
+  }
 }
 
 async function initLibrary() {
@@ -103,45 +148,86 @@ async function initLibrary() {
   }
 }
 
-function setScore(s, { scroll = true } = {}) {
-  original = s;
+function setPiece(p, voice = 0, { scroll = true } = {}) {
+  piece = p;
+  selection = voice;
   els.transposa.value = 0;
   els.obra.hidden = false;
+  buildVoiceSelector();
   applyTransposition(0);
   if (scroll) els.obra.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+// Selector de veu: 1a gralla, 2a gralla o totes alhora.
+function buildVoiceSelector() {
+  const n = piece.voices.length;
+  els.veus.hidden = n < 2;
+  els.veus.innerHTML = '';
+  if (n < 2) return;
+  const options = piece.voices.map((v, i) => [i, v.nom]);
+  options.push(['totes', n === 2 ? 'Les dues' : 'Totes']);
+  for (const [value, label] of options) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.setAttribute('role', 'radio');
+    btn.dataset.sel = value;
+    btn.textContent = label;
+    btn.addEventListener('click', () => selectVoice(value));
+    els.veus.append(btn);
+  }
+  markVoiceSelector();
+}
+
+function markVoiceSelector() {
+  for (const btn of els.veus.querySelectorAll('button')) {
+    btn.setAttribute('aria-checked', String(btn.dataset.sel === String(selection)));
+  }
+}
+
+function selectVoice(value) {
+  if (!piece || value === selection) return;
+  selection = value;
+  markVoiceSelector();
+  if (currentEntry && location.hash !== hashFor(currentEntry, selection)) {
+    history.replaceState(null, '', hashFor(currentEntry, selection));
+  }
+  applyTransposition(Number(els.transposa.value) || 0);
+}
+
 function applyTransposition(semitones) {
-  score = transposeScore(original, semitones);
-  player.setScore(score, SO_REAL);
-  els.titol.textContent = score.title || 'Partitura';
+  const voices = selection === 'totes' ? piece.voices : [piece.voices[selection] ?? piece.voices[0]];
+  shown = voices.map(({ nom, score }) => ({ nom, score: transposeScore(score, semitones) }));
+  player.setScore(shown.map((v) => v.score), SO_REAL);
+  els.titol.textContent = piece.title || 'Partitura';
   els.estat.textContent = tempoText();
   draw();
   checkRange();
 }
 
 function draw() {
-  if (!score) return;
-  active = null;
-  index = renderScore(els.partitura, score, { onNoteClick });
-  if (player.currentMark) highlight(player.currentMark);
+  if (!shown.length) return;
+  active = [];
+  index = renderScore(els.partitura, shown, { onNoteClick });
+  if (player.currentMarks.length) highlight(player.currentMarks);
 }
 
 // ---------- Registre ----------
 
-function outOfRange(s, t = 0) {
+function outOfRange(voices, t = 0) {
   let n = 0;
-  for (const m of s.measures) for (const note of m.notes) if (!note.isRest && !inRange(note.midi + t)) n++;
+  for (const { score } of voices) {
+    for (const m of score.measures) for (const note of m.notes) if (!note.isRest && !inRange(note.midi + t)) n++;
+  }
   return n;
 }
 
 function checkRange() {
-  const bad = outOfRange(score);
+  const bad = outOfRange(shown);
   if (!bad) { els.avis.hidden = true; return; }
   let best = 0;
   let bestBad = bad;
   for (let t = -12; t <= 12; t++) {
-    const b = outOfRange(score, t);
+    const b = outOfRange(shown, t);
     if (b < bestBad || (b === bestBad && Math.abs(t) < Math.abs(best))) { best = t; bestBad = b; }
   }
   els.avis.hidden = false;
@@ -162,19 +248,22 @@ function checkRange() {
 
 // ---------- Ressaltat ----------
 
-function highlight(id) {
-  if (active) {
-    const prev = index.get(active);
+function highlight(ids) {
+  for (const id of active) {
+    const prev = index.get(id);
     prev?.card?.classList.remove('actiu');
     prev?.group?.classList.remove('actiu');
   }
-  active = id;
-  if (!id) return;
-  const entry = index.get(id);
-  if (!entry) return;
-  entry.card?.classList.add('actiu');
-  entry.group?.classList.add('actiu');
-  followRow(entry.row);
+  active = ids || [];
+  let row = null;
+  for (const id of active) {
+    const entry = index.get(id);
+    if (!entry) continue;
+    entry.card?.classList.add('actiu');
+    entry.group?.classList.add('actiu');
+    row ??= entry.row;
+  }
+  followRow(row);
 }
 
 function followRow(row) {
@@ -244,21 +333,23 @@ els.bucle.addEventListener('change', () => { player.loop = els.bucle.checked; })
 els.timbre.addEventListener('change', () => player.setInstrument(els.timbre.value));
 
 els.midi.addEventListener('click', () => {
-  if (!score) return;
-  const bytes = buildMidi(player.events, score.tempo * player.tempoFactor, els.timbre.value, score.title);
-  const name = (score.title || 'gralla').replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '').toLowerCase();
+  if (!shown.length) return;
+  const voiceName = piece.voices.length > 1 ? (selection === 'totes' ? '' : shown[0].nom) : '';
+  const title = [piece.title, voiceName].filter(Boolean).join(' ');
+  const bytes = buildMidi(player.events, baseTempo() * player.tempoFactor, els.timbre.value, title);
+  const name = (title || 'gralla').replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '').toLowerCase();
   downloadMidi(bytes, `${name || 'gralla'}.mid`);
 });
 
 els.transposa.addEventListener('change', () => {
-  if (!original) return;
+  if (!piece) return;
   const t = Math.max(-12, Math.min(12, Math.round(Number(els.transposa.value) || 0)));
   els.transposa.value = t;
   applyTransposition(t);
 });
 
 document.addEventListener('keydown', (e) => {
-  if (e.code !== 'Space' || !score || e.target.closest('input, select, textarea, button, summary')) return;
+  if (e.code !== 'Space' || !shown.length || e.target.closest('input, select, textarea, button, summary')) return;
   e.preventDefault();
   els.play.click();
 });

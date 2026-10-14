@@ -21,14 +21,29 @@ i obre <http://localhost:8765>.
 
 ## Llibreria de partitures
 
-Les cançons són a `partitures/`: un fitxer `.musicxml` per peça i el catàleg `partitures/index.json`:
+Les cançons són a `partitures/`: un fitxer `.musicxml` per veu i el catàleg `partitures/index.json`.
+
+Cançó d'una sola veu:
 
 ```json
 { "id": "germa-jaume", "titol": "Germà Jaume", "fitxer": "germa-jaume.musicxml",
   "categoria": "Exercicis", "notes": "Tradicional" }
 ```
 
-Cada peça té un enllaç directe: `https://estevelg.github.io/gralla-app/#/<id>`.
+Cançó amb diverses veus (a la web es tria 1a gralla, 2a gralla o totes alhora). Totes les veus
+han de tenir els mateixos compassos. El `id` d'una veu és opcional: serveix perquè un enllaç antic
+com `#/polca-dours-2a-gralla` obri la cançó amb aquesta veu.
+
+```json
+{ "id": "gener", "titol": "Gener", "categoria": "Repertori", "notes": "Pasdoble",
+  "veus": [
+    { "nom": "1a gralla", "fitxer": "gener.musicxml" },
+    { "nom": "2a gralla", "fitxer": "gener-2a-gralla.musicxml" }
+  ] }
+```
+
+Cada peça té un enllaç directe: `https://estevelg.github.io/gralla-app/#/<id>`. Per a una veu concreta:
+`#/<id>/2` (2a gralla) o `#/<id>/totes` (totes alhora).
 
 Per afegir-ne una: transcriure-la a MusicXML, desar-la a `partitures/`, afegir-la a `index.json` i fer push.
 GitHub Pages s'actualitza sol en un parell de minuts.

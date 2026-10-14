@@ -10,10 +10,18 @@ export async function loadCatalog() {
   return res.json();
 }
 
-export async function fetchPiece(entry) {
-  const res = await fetch(BASE + entry.fitxer);
-  if (!res.ok) throw new Error(`No s'ha pogut carregar «${entry.titol}».`);
-  return res.text();
+// Veus d'una cançó: les entrades d'una sola veu tenen "fitxer"; les altres, "veus".
+export function entryVoices(entry) {
+  return entry.veus?.length ? entry.veus : [{ nom: 'Gralla', fitxer: entry.fitxer }];
+}
+
+// Descarrega el text MusicXML de cada veu.
+export function fetchPiece(entry) {
+  return Promise.all(entryVoices(entry).map(async (v) => {
+    const res = await fetch(BASE + v.fitxer);
+    if (!res.ok) throw new Error(`No s'ha pogut carregar «${entry.titol}».`);
+    return { nom: v.nom, xml: await res.text() };
+  }));
 }
 
 // Pinta la llista agrupada per categoria. Retorna una funció per filtrar-la.
@@ -40,7 +48,8 @@ export function renderCatalog(container, emptyEl, catalog, onPick) {
       a.className = 'targeta';
       a.href = `#/${entry.id}`;
       a.dataset.id = entry.id;
-      const meta = entry.notes || '';
+      const voices = entryVoices(entry);
+      const meta = [entry.notes, voices.length > 1 ? `${voices.length} veus` : ''].filter(Boolean).join(' · ');
       a.innerHTML = `<span class="targeta-titol"></span>${meta ? '<span class="targeta-meta"></span>' : ''}`;
       a.querySelector('.targeta-titol').textContent = entry.titol;
       if (meta) a.querySelector('.targeta-meta').textContent = meta;
