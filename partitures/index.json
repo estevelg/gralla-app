@@ -3,6 +3,8 @@
   {"id": "polca-dours-2a-gralla", "titol": "Polca d'ours (2a gralla)", "fitxer": "polca-dours-2a-gralla.musicxml", "categoria": "Repertori", "nivell": "Inicial", "notes": "2a gralla"},
   {"id": "cercavila-el-circ", "titol": "Cercavila: El circ", "fitxer": "cercavila-el-circ.musicxml", "categoria": "Repertori", "nivell": "Inicial", "notes": "1a gralla"},
   {"id": "cercavila-el-circ-2a-gralla", "titol": "Cercavila: El circ (2a gralla)", "fitxer": "cercavila-el-circ-2a-gralla.musicxml", "categoria": "Repertori", "nivell": "Mitjà", "notes": "2a gralla"},
+  {"id": "vermut-barcelona", "titol": "Cercavila: Vermut Barcelona", "fitxer": "vermut-barcelona.musicxml", "categoria": "Repertori", "nivell": "Mitjà", "notes": "1a gralla"},
+  {"id": "vermut-barcelona-2a-gralla", "titol": "Cercavila: Vermut Barcelona (2a gralla)", "fitxer": "vermut-barcelona-2a-gralla.musicxml", "categoria": "Repertori", "nivell": "Mitjà", "notes": "2a gralla"},
   {"id": "passi-ho-be", "titol": "Passi-ho bé", "fitxer": "passi-ho-be.musicxml", "categoria": "Repertori", "nivell": "Inicial", "notes": "Marxa · part A"},
   {"id": "bella-ciao", "titol": "Bella ciao", "fitxer": "bella-ciao.musicxml", "categoria": "Repertori", "nivell": "Mitjà", "notes": "En Re menor"},
   {"id": "escala-sol-major", "titol": "Escala de Sol major", "fitxer": "escala-sol-major.musicxml", "categoria": "Exercicis", "nivell": "Inicial"},
