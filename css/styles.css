@@ -83,6 +83,10 @@ a { color: var(--accent); }
   font-weight: 800;
   letter-spacing: -0.02em;
 }
+.capcalera h1 a {
+  color: inherit;
+  text-decoration: none;
+}
 .capcalera h1::after {
   content: "";
   display: block;

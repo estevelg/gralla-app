@@ -25,7 +25,7 @@ Les cançons són a `partitures/`: un fitxer `.musicxml` per peça i el catàleg
 
 ```json
 { "id": "germa-jaume", "titol": "Germà Jaume", "fitxer": "germa-jaume.musicxml",
-  "categoria": "Exercicis", "nivell": "Inicial", "notes": "Tradicional" }
+  "categoria": "Exercicis", "notes": "Tradicional" }
 ```
 
 Cada peça té un enllaç directe: `https://estevelg.github.io/gralla-app/#/<id>`.

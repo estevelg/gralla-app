@@ -40,7 +40,7 @@ export function renderCatalog(container, emptyEl, catalog, onPick) {
       a.className = 'targeta';
       a.href = `#/${entry.id}`;
       a.dataset.id = entry.id;
-      const meta = [entry.nivell, entry.notes].filter(Boolean).join(' · ');
+      const meta = entry.notes || '';
       a.innerHTML = `<span class="targeta-titol"></span>${meta ? '<span class="targeta-meta"></span>' : ''}`;
       a.querySelector('.targeta-titol').textContent = entry.titol;
       if (meta) a.querySelector('.targeta-meta').textContent = meta;
