@@ -1,4 +1,4 @@
-# Gralla seca · Digitacions
+# Que sonin les gralles!
 
 Web-app per a principiants de gralla seca: tries una cançó de la llibreria (o carregues un MusicXML propi) i
 - la pots escoltar (so de xeremia/shanai, oboè o flauta; velocitat ajustable, repetició),
