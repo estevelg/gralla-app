@@ -32,10 +32,12 @@ Cançó d'una sola veu:
 
 Cançó amb diverses veus (a la web es tria 1a gralla, 2a gralla o totes alhora). Totes les veus
 han de tenir els mateixos compassos. El `id` d'una veu és opcional: serveix perquè un enllaç antic
-com `#/polca-dours-2a-gralla` obri la cançó amb aquesta veu.
+com `#/polca-dours-2a-gralla` obri la cançó amb aquesta veu. El `fitxer` de fora (la 1a veu) és perquè
+un navegador que encara tingui el JavaScript antic a la memòria cau pugui obrir la cançó igualment.
 
 ```json
 { "id": "gener", "titol": "Gener", "categoria": "Repertori", "notes": "Pasdoble",
+  "fitxer": "gener.musicxml",
   "veus": [
     { "nom": "1a gralla", "fitxer": "gener.musicxml" },
     { "nom": "2a gralla", "fitxer": "gener-2a-gralla.musicxml" }
