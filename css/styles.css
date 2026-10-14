@@ -73,6 +73,8 @@ a { color: var(--accent); }
   clip: rect(0 0 0 0);
 }
 
+[hidden] { display: none !important; }
+
 /* Capçalera */
 .capcalera {
   padding: 28px 0 12px;
