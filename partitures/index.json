@@ -9,6 +9,7 @@
   {"id": "hereu-riera", "titol": "L'hereu Riera", "fitxer": "hereu-riera.musicxml", "categoria": "Repertori", "notes": "Tradicional"},
   {"id": "gener", "titol": "Gener", "fitxer": "gener.musicxml", "categoria": "Repertori", "notes": "Pasdoble · 1a gralla"},
   {"id": "gener-2a-gralla", "titol": "Gener (2a gralla)", "fitxer": "gener-2a-gralla.musicxml", "categoria": "Repertori", "notes": "Pasdoble · 2a gralla"},
+  {"id": "febrer", "titol": "Febrer", "fitxer": "febrer.musicxml", "categoria": "Repertori", "notes": "Pasdoble"},
   {"id": "passi-ho-be", "titol": "Passi-ho bé", "fitxer": "passi-ho-be.musicxml", "categoria": "Repertori", "notes": "Marxa · part A"},
   {"id": "bella-ciao", "titol": "Bella ciao", "fitxer": "bella-ciao.musicxml", "categoria": "Repertori", "notes": "En Re menor"},
   {"id": "escala-sol-major", "titol": "Escala de Sol major", "fitxer": "escala-sol-major.musicxml", "categoria": "Exercicis"},
