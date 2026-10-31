@@ -18,7 +18,8 @@ export function entryVoices(entry) {
 // Descarrega el text MusicXML de cada veu.
 export function fetchPiece(entry) {
   return Promise.all(entryVoices(entry).map(async (v) => {
-    const res = await fetch(BASE + v.fitxer);
+    // 'no-cache': el navegador comprova si la partitura ha canviat, i quan se'n corregeix una es veu de seguida.
+    const res = await fetch(BASE + v.fitxer, { cache: 'no-cache' });
     if (!res.ok) throw new Error(`No s'ha pogut carregar «${entry.titol}».`);
     return { nom: v.nom, xml: await res.text() };
   }));
