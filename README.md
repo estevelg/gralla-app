@@ -62,7 +62,7 @@ GitHub Pages s'actualitza sol en un parell de minuts.
 | --- | --- |
 | `js/fingerings.js` | Taula de digitacions (MIDI escrit → 7 forats) i notes on cal bufar més fort |
 | `js/fingering-svg.js` | Dibuix d'una digitació |
-| `js/musicxml.js` | Lectura de MusicXML/MXL, repeticions i caselles, transposició |
+| `js/musicxml.js` | Lectura de MusicXML/MXL, repeticions i caselles, D.S./D.C. al Fine, canvis de tempo, transposició |
 | `js/render.js` | Pentagrama amb VexFlow + nom i digitació sota cada nota |
 | `js/player.js` | Reproducció amb Web Audio (smplr, sons General MIDI) |
 | `js/midi-export.js` | Exportació a fitxer MIDI |

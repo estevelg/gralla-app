@@ -47,6 +47,22 @@ function makeStaveNotes(measure) {
   });
 }
 
+const METRONOME_DURATION = { whole: 'w', half: 'h', quarter: 'q', eighth: '8', '16th': '16' };
+
+// Marques sobre el pentagrama: tempo (♩ = 110), segno, «Fine» i «D.S. al Fine».
+function addMarks(stave, m) {
+  const { Repetition, StaveTempo } = VF();
+  if (m.metronome && !m.endings) {
+    const { unit, dots, bpm } = m.metronome;
+    const tempo = { duration: METRONOME_DURATION[unit] || 'q', dots, bpm };
+    stave.addModifier(new StaveTempo(tempo, stave.getX() + (m.segno ? 34 : 0), -4));
+  }
+  if (m.segno) stave.addModifier(new Repetition(Repetition.type.SEGNO_LEFT, stave.getX() + 4, 0));
+  if (m.fine) stave.addModifier(new Repetition(Repetition.type.FINE, stave.getX(), 0));
+  if (m.dalSegno) stave.addModifier(new Repetition(Repetition.type.DS_AL_FINE, stave.getX(), 0));
+  if (m.daCapo) stave.addModifier(new Repetition(Repetition.type.DC_AL_FINE, stave.getX(), 0));
+}
+
 function headerWidth(m, isRowStart, isFirst) {
   let w = 0;
   if (isRowStart) w += 34 + Math.abs(m.fifths) * 10;
@@ -154,6 +170,7 @@ export function renderScore(container, voices, { onNoteClick } = {}) {
               : m.endingStop ? VoltaType.END : VoltaType.MID;
           stave.setVoltaType(type, m.endingStart ? m.endingLabel : '', -8);
         }
+        if (vIdx === 0) addMarks(stave, m);
         stave.setContext(ctx).draw();
 
         const notes = makeStaveNotes(m);

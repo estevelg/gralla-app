@@ -18,21 +18,27 @@ export function buildEvents(voices, soRealSemitones = 0) {
     const voiceMarks = [];
     let t = 0;
     let open = null; // nota lligada pendent
+    let tempo = score.tempo;
     for (const mi of unrollMeasures(score.measures)) {
-      for (const n of score.measures[mi].notes) {
-        voiceMarks.push({ start: t, dur: n.durQ, id: n.id });
+      const measure = score.measures[mi];
+      if (measure.tempo) tempo = measure.tempo;
+      // Els canvis de tempo s'absorbeixen aquí: el temps va en negres del tempo inicial.
+      const k = score.tempo / tempo;
+      for (const n of measure.notes) {
+        const dur = n.durQ * k;
+        voiceMarks.push({ start: t, dur, id: n.id });
         if (!n.isRest) {
           if (n.tieStop && open && open.midi === n.midi + soRealSemitones) {
-            open.dur += n.durQ;
+            open.dur += dur;
           } else {
-            open = { start: t, dur: n.durQ, midi: n.midi + soRealSemitones, voice };
+            open = { start: t, dur, midi: n.midi + soRealSemitones, voice };
             sounds.push(open);
           }
           if (!n.tieStart) open = null;
         } else {
           open = null;
         }
-        t += n.durQ;
+        t += dur;
       }
     }
     marks.push(voiceMarks);

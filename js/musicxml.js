@@ -2,6 +2,7 @@
 // Només es llegeix la primera part i la primera veu: la gralla és monòdica.
 
 const STEP_SEMITONES = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+const BEAT_UNIT_QUARTERS = { whole: 4, half: 2, quarter: 1, eighth: 0.5, '16th': 0.25 };
 
 export async function readScoreFile(file) {
   const name = file.name.toLowerCase();
@@ -89,9 +90,34 @@ export function parseMusicXML(xmlText) {
         }
         case 'direction':
         case 'sound': {
-          const s = el.nodeName === 'sound' ? el : el.querySelector('sound');
-          const t = s?.getAttribute('tempo') ?? childText(el, 'metronome > per-minute');
-          if (t && !Number.isNaN(Number(t)) && tempo === null) tempo = Number(t);
+          const isDirection = el.nodeName === 'direction';
+          const sounds = isDirection ? [...el.querySelectorAll('sound')] : [el];
+          const words = isDirection ? [...el.querySelectorAll('words')].map((w) => w.textContent.trim()).join(' ') : '';
+          let bpm = null; // en negres per minut
+          for (const s of sounds) {
+            const t = Number(s.getAttribute('tempo'));
+            if (t > 0) bpm = t;
+            if (s.hasAttribute('segno')) m.segno = true;
+            if (s.hasAttribute('dalsegno')) m.dalSegno = true;
+            if (s.hasAttribute('dacapo')) m.daCapo = true;
+            if (s.hasAttribute('fine')) m.fine = true;
+          }
+          const metronome = isDirection ? el.querySelector('metronome') : null;
+          const perMinute = metronome ? Number(childText(metronome, 'per-minute')) : 0;
+          if (perMinute > 0) {
+            const unit = childText(metronome, 'beat-unit') || 'quarter';
+            const dots = metronome.querySelectorAll('beat-unit-dot').length;
+            m.metronome = { unit, dots, bpm: perMinute };
+            if (bpm === null) bpm = perMinute * (BEAT_UNIT_QUARTERS[unit] ?? 1) * (dots ? 1.5 : 1);
+          }
+          if (isDirection && el.querySelector('segno')) m.segno = true;
+          if (/^fine$/i.test(words)) m.fine = true;
+          if (/\bd\.\s?s\.?|dal\s+segno/i.test(words)) m.dalSegno = true;
+          if (/\bd\.\s?c\.?|da\s+capo/i.test(words)) m.daCapo = true;
+          if (bpm !== null) {
+            m.tempo = bpm;
+            if (tempo === null) tempo = bpm;
+          }
           break;
         }
         case 'barline': {
@@ -166,10 +192,15 @@ function parseNote(el, divisions, m, beats, beatType) {
   return n;
 }
 
-// Ordre de reproducció dels compassos, desplegant repeticions i caselles 1a/2a.
+// Ordre de reproducció dels compassos, desplegant repeticions, caselles 1a/2a
+// i el salt «D.S. al Fine» / «D.C. al Fine». Després del salt no es fan repeticions
+// i només es toca l'última casella, com és habitual.
 export function unrollMeasures(measures) {
   const order = [];
   const finished = new Set();
+  const segno = measures.findIndex((m) => m.segno);
+  const lastEnding = Math.max(0, ...measures.flatMap((m) => m.endings || []));
+  let jumped = false;
   let start = 0;
   let pass = 1;
   let jumpedFrom = -1; // compàs amb la barra de repetició que ens ha fet tornar enrere
@@ -177,6 +208,14 @@ export function unrollMeasures(measures) {
   let guard = 0;
   while (i < measures.length && guard++ < 10000) {
     const m = measures[i];
+    if (jumped) {
+      if (m.dalSegno || m.daCapo) break;
+      if (m.endings && !m.endings.includes(lastEnding)) { i++; continue; }
+      order.push(i);
+      if (m.fine) break;
+      i++;
+      continue;
+    }
     if (pass > 1 && i > jumpedFrom && !m.endings) {
       // Hem sortit de les caselles: la repetició s'ha acabat.
       pass = 1;
@@ -196,6 +235,12 @@ export function unrollMeasures(measures) {
       finished.add(i);
       pass = 1;
       start = i + 1;
+    }
+    const target = m.dalSegno && segno >= 0 ? segno : m.daCapo ? 0 : -1;
+    if (target >= 0) {
+      jumped = true;
+      i = target;
+      continue;
     }
     i++;
   }
