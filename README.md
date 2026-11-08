@@ -6,7 +6,7 @@ Web-app per a principiants de gralla seca: tries una cançó de la llibreria (o 
 - la nota que sona es ressalta i la vista la segueix,
 - a la barra es tria què es veu (caselles **Pentagrama**, **Notes** i **Digitació**, mínim una de marcada) i l'elecció es recorda,
 - pots descarregar-la en **MIDI**.
-- pots **imprimir-la** (botó «Imprimeix»): A5 apaisat, amb el títol i la vista, la veu i la transposició que tinguis seleccionades, per posar-la al faristol,
+- pots **imprimir-la** (botó «Imprimeix»): A5 apaisat, amb el títol i la vista, la veu i la transposició que tinguis seleccionades, per posar-la al faristol; la mida es tria sola (entre el 70 % i el 40 %) perquè tota la cançó càpiga, si pot ser, en un sol full,
 
 Les digitacions surten de la taula de la gralla Bessó ([pacobesso.net](https://www.pacobesso.net)),
 de Sol a Re agut. Per a Re♯ i La♯ es fa servir la posició normal.

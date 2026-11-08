@@ -38,18 +38,8 @@ body:has(#impressio:not(:empty)) > :not(#impressio) { display: none !important; 
   print-color-adjust: exact;
 }
 
-.impressio-titol {
-  margin: 0 0 1.5mm;
-  font-size: 14pt;
-  line-height: 1.1;
-  break-after: avoid;
-}
+.impressio-titol,
 .impressio-subtitol {
-  margin: 0 0 2mm;
-  font-size: 10pt;
-  font-weight: 600;
-  line-height: 1.1;
-  color: #333;
   break-after: avoid;
 }
 

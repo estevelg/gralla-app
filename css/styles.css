@@ -393,6 +393,27 @@ input[type="number"] { width: 4.5em; }
   visibility: hidden;
   pointer-events: none;
 }
+/* Disposició de la còpia per imprimir. És aquí (i no a print.css) perquè js/main.js la mesura
+   a la pantalla per triar la mida més gran que fa que tota la cançó càpiga en un sol full. */
+#impressio .impressio-titol {
+  margin: 0 0 1mm;
+  font-size: 14pt;
+  line-height: 1.1;
+}
+#impressio .impressio-subtitol {
+  margin: 0 0 1.5mm;
+  font-size: 10pt;
+  font-weight: 600;
+  line-height: 1.1;
+  color: #333;
+}
+/* Amb noms o digitacions a sota cal deixar lloc a les plicas, barres i claudàtors de tresillo; a la partitura sola es pot ajustar més. */
+#impressio.compacte { --staff-h: 110px; }
+#impressio.compacte.sense-noms.sense-digitacio { --staff-h: 96px; }
+#impressio .fila { margin-bottom: 1px; }
+#impressio .fila + .fila { padding-top: 6px; }
+#impressio .fila.amb-marques { padding-top: 14px; }
+#impressio .fila.amb-segno { padding-top: 42px; }
 
 .obra {
   --staff-h: 132px;  /* pentagrama */

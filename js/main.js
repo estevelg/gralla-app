@@ -230,10 +230,15 @@ els.vista.addEventListener('change', (e) => {
 
 // ---------- Impressió ----------
 
-// A5 apaisat amb marges de 8 mm: 194 mm útils de ample. Amb digitacions, la partitura
-// s'imprimeix al 70 % perquè hi càpiguen més files per pàgina i calgui passar menys fulls.
-const PRINT_WIDTH_MM = 194;
-const PRINT_FINGERING_SCALE = 0.7;
+// A5 apaisat amb marges de 8 mm: 194 × 132 mm útils.
+const mmToPx = (mm) => (mm * 96) / 25.4;
+const PRINT_WIDTH = mmToPx(194);
+const PRINT_HEIGHT = mmToPx(132);
+// Mides de la partitura per imprimir (1 = la de la pantalla), de més gran a més petita: s'agafa la
+// més gran que fa que tota la cançó càpiga en un sol full. Si ni amb la més petita hi cap, s'usa
+// una mida intermèdia i la cançó ocupa diversos fulls (les files no es parteixen).
+const PRINT_SCALES = [0.7, 0.65, 0.6, 0.55, 0.5, 0.45, 0.4];
+const PRINT_MULTIPAGE_SCALE = 0.5;
 
 // Dibuixa una còpia de la partitura pensada per a paper (amb la vista, la veu i la
 // transposició actuals) dins #impressio, que només es veu en imprimir (css/print.css).
@@ -255,16 +260,31 @@ function preparePrint() {
     out.append(voices);
   }
 
-  const scale = view.digitacio ? PRINT_FINGERING_SCALE : 1;
   const sheet = document.createElement('div');
   sheet.className = 'impressio-partitura';
-  sheet.style.zoom = scale;
-  const width = Math.floor((PRINT_WIDTH_MM * 96) / 25.4 / scale);
-  sheet.style.width = `${width}px`;
   out.append(sheet);
+  const room = PRINT_HEIGHT - out.offsetHeight - 6; // alçada que queda per a la partitura al full
   // Sense targetes de digitació, les notes no necessiten tant d'espai i hi caben més compassos per fila.
   const noteWidth = view.digitacio ? 46 : view.noms ? 38 : 28;
-  renderScore(sheet, shown, { width, noteWidth });
+
+  // Dibuixa a mida real i retorna l'alçada que tindria un cop reduïda. Com més petita és la mida,
+  // més ample és la fila virtual i més compassos hi caben (menys files).
+  const draw = (scale) => {
+    const width = Math.floor(PRINT_WIDTH / scale);
+    sheet.style.zoom = 1;
+    sheet.style.width = `${width}px`;
+    renderScore(sheet, shown, { width, noteWidth });
+    return sheet.offsetHeight * scale;
+  };
+  let scale = null;
+  if (draw(PRINT_SCALES[PRINT_SCALES.length - 1]) <= room) { // si no hi cap ni a la més petita, no cal provar-les totes
+    scale = PRINT_SCALES.find((s) => draw(s) <= room);
+  }
+  if (scale === null) {
+    scale = PRINT_MULTIPAGE_SCALE;
+    draw(scale);
+  }
+  sheet.style.zoom = scale;
 }
 
 window.addEventListener('beforeprint', preparePrint);
