@@ -412,6 +412,16 @@ input[type="number"] { width: 4.5em; }
 .obra.sense-digitacio .veu .nota .bufa,
 .obra.sense-digitacio .llegenda { display: none; }
 .obra.sense-noms.sense-digitacio .veu .nota { display: none; }
+
+/* Partitura sola: pentagrames més junts (el dibuix sobra uns 16 px per dalt). */
+.obra.sense-noms.sense-digitacio { --staff-h: 104px; }
+.obra.sense-noms.sense-digitacio .pentagrama svg { position: relative; top: -16px; }
+.obra.sense-noms.sense-digitacio .fila { margin-bottom: 2px; }
+.obra.sense-noms.sense-digitacio .fila + .fila { padding-top: 8px; }
+.obra.sense-noms.sense-digitacio .fila.amb-marques { padding-top: 14px; }
+.obra.sense-noms.sense-digitacio .fila.amb-segno { padding-top: 42px; }
+.obra.sense-noms.sense-digitacio .veu-nom { font-size: 0; }
+.obra.sense-noms.sense-digitacio .veu-nom::after { content: attr(data-curt); font-size: .72rem; }
 .veu + .veu { border-top: 1px dotted var(--line); }
 .veu-nom {
   position: absolute;
@@ -532,8 +542,8 @@ input[type="number"] { width: 4.5em; }
   .timbre .etiqueta, #midi .etiqueta { display: none; }
   .veus { flex: 1 1 100%; }
   .veus button { flex: 1; padding: 4px 6px; }
-  .vista { flex: 1 1 100%; justify-content: space-between; }
-  .opcio { flex: 1; }
+  .vista { flex: 1 1 100%; flex-wrap: wrap; justify-content: space-between; }
+  .opcio { flex: 1 1 auto; }
   .opcio span { flex: 1; justify-content: center; padding: 4px 6px; }
   .tempo { flex: 1 1 100%; }
   .tempo input { flex: 1; width: auto; }

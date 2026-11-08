@@ -13,6 +13,7 @@ const DURATIONS = { breve: 'w', whole: 'w', half: 'h', quarter: 'q', eighth: '8'
 
 const STAFF_H = 132;       // alçada del dibuix del pentagrama (l'alçada de la banda és al CSS: --staff-h)
 const STAVE_Y = 22;        // espai a dalt per a les caselles 1a/2a i notes agudes
+const VOLTA_SHIFT = 20;    // acosta les caselles 1a/2a al pentagrama (per defecte VexFlow les posa a ~50 px)
 const PAD_X = 6;
 const MIN_NOTE_W = 46;     // espai mínim per nota (hi ha d'haver lloc per a la digitació)
 
@@ -119,6 +120,8 @@ export function renderScore(container, voices, { onNoteClick } = {}) {
     const rowEl = document.createElement('div');
     rowEl.className = 'fila';
     container.append(rowEl);
+    if (row.some(({ m }) => m.metronome || m.segno || m.fine || m.dalSegno || m.daCapo)) rowEl.classList.add('amb-marques');
+    if (row.some(({ m }) => m.segno)) rowEl.classList.add('amb-segno'); // el segno és un símbol alt
 
     const minTotal = row.reduce((s, r) => s + r.min, 0);
     const isLast = rIdx === rows.length - 1;
@@ -134,6 +137,7 @@ export function renderScore(container, voices, { onNoteClick } = {}) {
         const label = document.createElement('span');
         label.className = 'veu-nom';
         label.textContent = nom;
+        label.dataset.curt = nom.split(/\s+/)[0]; // «1a», per a la vista compacta
         bandEl.append(label);
       }
       rowEl.append(bandEl);
@@ -167,11 +171,11 @@ export function renderScore(container, voices, { onNoteClick } = {}) {
         if (m.repeatStart) stave.setBegBarType(Barline.type.REPEAT_BEGIN);
         if (m.repeatEnd) stave.setEndBarType(Barline.type.REPEAT_END);
         else if (m.index === score.measures.length - 1) stave.setEndBarType(Barline.type.END);
-        if (m.endings) {
+        if (m.endings && vIdx === 0) { // les caselles 1a/2a només sobre el pentagrama de dalt
           const type = m.endingStart && m.endingStop ? VoltaType.BEGIN_END
             : m.endingStart ? VoltaType.BEGIN
               : m.endingStop ? VoltaType.END : VoltaType.MID;
-          stave.setVoltaType(type, m.endingStart ? m.endingLabel : '', -8);
+          stave.setVoltaType(type, m.endingStart ? m.endingLabel : '', VOLTA_SHIFT);
         }
         if (vIdx === 0) addMarks(stave, m);
         stave.setContext(ctx).draw();
