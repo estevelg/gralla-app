@@ -383,6 +383,17 @@ input[type="number"] { width: 4.5em; }
   margin-bottom: 6px;
 }
 .fila + .fila { border-top: 1px dashed var(--line); padding-top: 4px; }
+/* Còpia per imprimir (js/main.js, preparePrint): fora de la vista però no amb display:none,
+   perquè VexFlow mesura text amb getBBox. En imprimir la mostra css/print.css. */
+#impressio {
+  position: absolute;
+  left: -10000px;
+  top: 0;
+  width: 210mm;
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .obra {
   --staff-h: 132px;  /* pentagrama */
   --names-h: 24px;   /* nom de la nota */
@@ -413,15 +424,16 @@ input[type="number"] { width: 4.5em; }
 .obra.sense-digitacio .llegenda { display: none; }
 .obra.sense-noms.sense-digitacio .veu .nota { display: none; }
 
-/* Partitura sola: pentagrames més junts (el dibuix sobra uns 16 px per dalt). */
-.obra.sense-noms.sense-digitacio { --staff-h: 104px; }
-.obra.sense-noms.sense-digitacio .pentagrama svg { position: relative; top: -16px; }
+/* Pentagrames més junts (el dibuix sobra uns 16 px per dalt): a la vista de partitura sola i, per
+   estalviar paper, a la còpia per imprimir (classe .compacte, js/main.js preparePrint). */
+.obra.sense-noms.sense-digitacio, .obra.compacte { --staff-h: 104px; }
+.obra.sense-noms.sense-digitacio .pentagrama svg, .obra.compacte .pentagrama svg { position: relative; top: -16px; }
 .obra.sense-noms.sense-digitacio .fila { margin-bottom: 2px; }
 .obra.sense-noms.sense-digitacio .fila + .fila { padding-top: 8px; }
-.obra.sense-noms.sense-digitacio .fila.amb-marques { padding-top: 14px; }
-.obra.sense-noms.sense-digitacio .fila.amb-segno { padding-top: 42px; }
-.obra.sense-noms.sense-digitacio .veu-nom { font-size: 0; }
-.obra.sense-noms.sense-digitacio .veu-nom::after { content: attr(data-curt); font-size: .72rem; }
+.obra.sense-noms.sense-digitacio .fila.amb-marques, .obra.compacte .fila.amb-marques { padding-top: 14px; }
+.obra.sense-noms.sense-digitacio .fila.amb-segno, .obra.compacte .fila.amb-segno { padding-top: 42px; }
+.obra.sense-noms.sense-digitacio .veu-nom, .obra.compacte .veu-nom { font-size: 0; }
+.obra.sense-noms.sense-digitacio .veu-nom::after, .obra.compacte .veu-nom::after { content: attr(data-curt); font-size: .72rem; }
 .veu + .veu { border-top: 1px dotted var(--line); }
 .veu-nom {
   position: absolute;

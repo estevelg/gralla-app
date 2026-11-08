@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/print.css" media="print">
   <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.5/build/cjs/vexflow.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
   <script type="module" src="js/main.js"></script>
@@ -80,6 +81,7 @@
             </select>
           </label>
           <button type="button" class="boto-text" id="midi"><span class="etiqueta">Descarrega </span>MIDI</button>
+          <button type="button" class="boto-text" id="imprimeix" title="Imprimeix la vista actual en A5 apaisat (per al faristol)">Imprimeix</button>
         </div>
       </div>
 
@@ -115,5 +117,8 @@
   <footer class="peu amplada">
     <p>Web-app per a principiants de gralla seca.</p>
   </footer>
+
+  <!-- Còpia de la partitura pensada per a paper: es dibuixa en imprimir (js/main.js, preparePrint). -->
+  <div id="impressio" class="obra" aria-hidden="true"></div>
 </body>
 </html>

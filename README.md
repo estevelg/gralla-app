@@ -6,6 +6,7 @@ Web-app per a principiants de gralla seca: tries una cançó de la llibreria (o 
 - la nota que sona es ressalta i la vista la segueix,
 - a la barra es tria què es veu (caselles **Pentagrama**, **Notes** i **Digitació**, mínim una de marcada) i l'elecció es recorda,
 - pots descarregar-la en **MIDI**.
+- pots **imprimir-la** (botó «Imprimeix»): A5 apaisat, amb el títol i la vista, la veu i la transposició que tinguis seleccionades, per posar-la al faristol,
 
 Les digitacions surten de la taula de la gralla Bessó ([pacobesso.net](https://www.pacobesso.net)),
 de Sol a Re agut. Per a Re♯ i La♯ es fa servir la posició normal.
@@ -68,6 +69,7 @@ GitHub Pages s'actualitza sol en un parell de minuts.
 | `js/player.js` | Reproducció amb Web Audio (smplr, sons General MIDI) |
 | `js/midi-export.js` | Exportació a fitxer MIDI |
 | `js/library.js` | Llista de cançons, cercador i enllaços directes |
+| `css/print.css` | Estils d'impressió (A5 apaisat, sempre en clar); la còpia per a paper es dibuixa a `preparePrint()` de `js/main.js` |
 | `partitures/` | Llibreria de partitures i catàleg `index.json` |
 
 Llibreries (per CDN): VexFlow 4, JSZip, smplr.

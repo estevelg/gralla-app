@@ -16,6 +16,7 @@ const STAVE_Y = 22;        // espai a dalt per a les caselles 1a/2a i notes agud
 const VOLTA_SHIFT = 20;    // acosta les caselles 1a/2a al pentagrama (per defecte VexFlow les posa a ~50 px)
 const PAD_X = 6;
 const MIN_NOTE_W = 46;     // espai mínim per nota (hi ha d'haver lloc per a la digitació)
+let noteWidth = MIN_NOTE_W; // el de la partitura que s'està dibuixant (vegeu l'opció noteWidth)
 
 export function noteName(n) {
   return NAMES[n.step] + (ALTER_SYMBOL[n.alter] ?? '');
@@ -74,7 +75,7 @@ function headerWidth(m, isRowStart, isFirst) {
 
 function measureMinWidth(m) {
   const accidentals = m.notes.filter((n) => !n.isRest && n.alter).length;
-  return Math.max(90, m.notes.length * MIN_NOTE_W + accidentals * 12 + 26);
+  return Math.max(90, m.notes.length * noteWidth + accidentals * 12 + 26);
 }
 
 // Reparteix els compassos en files segons l'amplada disponible.
@@ -102,14 +103,17 @@ function layoutRows(measures, width, minOf) {
  * Dibuixa la partitura dins de `container`: una banda (pentagrama + digitacions) per veu
  * i fila, amb els compassos alineats entre veus.
  * `voices` és una llista de { nom, score }; totes amb els mateixos compassos.
+ * `width` (opcional) fixa l'amplada en px; si no, s'usa la del contenidor (per imprimir).
+ * `noteWidth` (opcional) és l'espai mínim per nota: es pot reduir si no hi ha targetes amb digitació.
  * Retorna un Map id → { card, group, note, row } per poder ressaltar i fer clic.
  */
-export function renderScore(container, voices, { onNoteClick } = {}) {
+export function renderScore(container, voices, { onNoteClick, width: forcedWidth, noteWidth: minNoteWidth } = {}) {
   const {
     Renderer, Stave, Voice, Formatter, Accidental, Beam, Tuplet, StaveTie, Barline, VoltaType,
   } = VF();
+  noteWidth = minNoteWidth ?? MIN_NOTE_W;
   container.innerHTML = '';
-  const width = Math.max(300, container.clientWidth);
+  const width = forcedWidth ?? Math.max(300, container.clientWidth);
   const base = voices[0].score.measures;
   const minOf = (m) => Math.max(...voices.map((v) => measureMinWidth(v.score.measures[m.index])));
   const rows = layoutRows(base, width - 2 * PAD_X, minOf);

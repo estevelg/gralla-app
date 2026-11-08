@@ -1,0 +1,72 @@
+/* Impressió: partitura en A5 apaisat per al faristol. Només es veu #impressio,
+   que js/main.js omple en imprimir (títol + la vista, la veu i la transposició actuals). */
+
+@page {
+  size: A5 landscape;
+  margin: 8mm;
+}
+
+/* Sempre en clar i amb tinta negra, encara que la pantalla estigui en mode fosc. */
+html:root:root:root {
+  --paper: #fff;
+  --surface: #fff;
+  --ink: #000;
+  --ink-soft: #333;
+  --line: #8a8a8a;
+  --accent: #b00020;
+  --accent-soft: #fff;
+  --gold: #fff;
+  --wood: #e6e6e6;
+  color-scheme: light;
+}
+
+body {
+  background: #fff;
+  color: #000;
+  font-size: 12pt;
+}
+
+/* Amagar tot el que no sigui la còpia per imprimir (si encara no n'hi ha, s'imprimeix la pàgina tal qual). */
+body:has(#impressio:not(:empty)) > :not(#impressio) { display: none !important; }
+
+#impressio {
+  position: static;
+  width: auto;
+  visibility: visible;
+  pointer-events: auto;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.impressio-titol {
+  margin: 0 0 1.5mm;
+  font-size: 14pt;
+  line-height: 1.1;
+  break-after: avoid;
+}
+.impressio-veus {
+  margin-left: 3mm;
+  font-size: 9pt;
+  font-weight: 600;
+  color: #333;
+}
+#impressio .llegenda {
+  margin: 0 0 1.5mm;
+  gap: 1mm 4mm;
+  font-size: 7.5pt;
+  break-inside: avoid;
+  break-after: avoid;
+}
+
+/* Una fila (amb les seves veus) no es parteix entre dues pàgines. */
+#impressio .fila {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* L'etiqueta «fort» sense fons daurat: vora negra. */
+#impressio .bufa {
+  background: #fff;
+  color: #000;
+  border: 1px solid #000;
+}

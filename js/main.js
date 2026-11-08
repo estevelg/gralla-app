@@ -31,6 +31,8 @@ const els = {
   transposa: $('#transposa'),
   veus: $('#veus'),
   vista: $('#vista'),
+  imprimeix: $('#imprimeix'),
+  impressio: $('#impressio'),
 };
 
 let piece = null;      // cançó tal com s'ha llegit: { title, voices: [{ nom, score }] }
@@ -225,6 +227,51 @@ els.vista.addEventListener('change', (e) => {
   applyView();
   try { localStorage.setItem(VIEW_KEY, JSON.stringify(view)); } catch { /* no es pot desar */ }
 });
+
+// ---------- Impressió ----------
+
+// A5 apaisat amb marges de 8 mm: 194 mm útils de ample. Amb digitacions, la partitura
+// s'imprimeix al 70 % perquè hi càpiguen més files per pàgina i calgui passar menys fulls.
+const PRINT_WIDTH_MM = 194;
+const PRINT_FINGERING_SCALE = 0.7;
+
+// Dibuixa una còpia de la partitura pensada per a paper (amb la vista, la veu i la
+// transposició actuals) dins #impressio, que només es veu en imprimir (css/print.css).
+function preparePrint() {
+  const out = els.impressio;
+  out.innerHTML = '';
+  if (!piece || !shown.length) return;
+  // Mateixa vista (sense-pentagrama, sense-noms, sense-digitacio); amb pentagrama, més compacte per estalviar paper.
+  out.className = `${els.obra.className}${view.pentagrama ? ' compacte' : ''}`;
+
+  const title = document.createElement('h1');
+  title.className = 'impressio-titol';
+  title.textContent = piece.title || 'Partitura';
+  if (piece.voices.length > 1 && shown.length === 1) { // amb les dues veus ja surt l'etiqueta a cada pentagrama
+    const voice = document.createElement('span');
+    voice.className = 'impressio-veus';
+    voice.textContent = shown[0].nom;
+    title.append(voice);
+  }
+  out.append(title);
+  const legend = document.querySelector('.llegenda');
+  if (view.digitacio && legend) out.append(legend.cloneNode(true));
+
+  const scale = view.digitacio ? PRINT_FINGERING_SCALE : 1;
+  const sheet = document.createElement('div');
+  sheet.className = 'impressio-partitura';
+  sheet.style.zoom = scale;
+  const width = Math.floor((PRINT_WIDTH_MM * 96) / 25.4 / scale);
+  sheet.style.width = `${width}px`;
+  out.append(sheet);
+  // Sense targetes de digitació, les notes no necessiten tant d'espai i hi caben més compassos per fila.
+  const noteWidth = view.digitacio ? 46 : view.noms ? 38 : 28;
+  renderScore(sheet, shown, { width, noteWidth });
+}
+
+window.addEventListener('beforeprint', preparePrint);
+window.addEventListener('afterprint', () => { els.impressio.innerHTML = ''; });
+els.imprimeix.addEventListener('click', () => window.print());
 
 function applyTransposition(semitones) {
   const voices = selection === 'totes' ? piece.voices : [piece.voices[selection] ?? piece.voices[0]];
