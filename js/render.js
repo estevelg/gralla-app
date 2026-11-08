@@ -11,10 +11,9 @@ const ALTER_KEY = { '-2': 'bb', '-1': 'b', 0: '', 1: '#', 2: '##' };
 const KEYS = { 0: 'C', 1: 'G', 2: 'D', 3: 'A', 4: 'E', 5: 'B', 6: 'F#', 7: 'C#', '-1': 'F', '-2': 'Bb', '-3': 'Eb', '-4': 'Ab', '-5': 'Db', '-6': 'Gb', '-7': 'Cb' };
 const DURATIONS = { breve: 'w', whole: 'w', half: 'h', quarter: 'q', eighth: '8', '16th': '16', '32nd': '32', '64th': '64' };
 
-const STAFF_H = 132;       // alçada de la zona del pentagrama
+const STAFF_H = 132;       // alçada del dibuix del pentagrama (l'alçada de la banda és al CSS: --staff-h)
 const STAVE_Y = 22;        // espai a dalt per a les caselles 1a/2a i notes agudes
 const PAD_X = 6;
-const CARD_H = 162;        // nom + digitació
 const MIN_NOTE_W = 46;     // espai mínim per nota (hi ha d'haver lloc per a la digitació)
 
 export function noteName(n) {
@@ -128,7 +127,6 @@ export function renderScore(container, voices, { onNoteClick } = {}) {
     voices.forEach(({ nom, score }, vIdx) => {
       const bandEl = document.createElement('div');
       bandEl.className = 'veu';
-      bandEl.style.height = `${STAFF_H + CARD_H}px`;
       const staffEl = document.createElement('div');
       staffEl.className = 'pentagrama';
       bandEl.append(staffEl);
@@ -152,6 +150,11 @@ export function renderScore(container, voices, { onNoteClick } = {}) {
         const m = score.measures[m0.index];
         const w = min * stretch;
         const stave = new Stave(x, STAVE_Y, w);
+        // Barra entre compassos, només visible quan s'amaga el pentagrama.
+        const bar = document.createElement('span');
+        bar.className = 'compas';
+        bar.style.left = `${x}px`;
+        bandEl.append(bar);
         const first = m.index === 0;
         if (cIdx === 0) {
           stave.addClef('treble');
@@ -238,7 +241,6 @@ export function renderScore(container, voices, { onNoteClick } = {}) {
           card.className = 'nota';
           card.dataset.id = n.id;
           card.style.left = `${cx}px`;
-          card.style.top = `${STAFF_H}px`;
           const fing = getFingering(n.midi);
           if (!fing) card.classList.add('fora');
           if (n.tieStop) card.classList.add('lligada');

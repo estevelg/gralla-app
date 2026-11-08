@@ -30,6 +30,7 @@ const els = {
   taula: $('#taula-graella'),
   transposa: $('#transposa'),
   veus: $('#veus'),
+  vista: $('#vista'),
 };
 
 let piece = null;      // cançó tal com s'ha llegit: { title, voices: [{ nom, score }] }
@@ -193,6 +194,37 @@ function selectVoice(value) {
   }
   applyTransposition(Number(els.transposa.value) || 0);
 }
+
+// ---------- Mode de visualització ----------
+
+// Què es mostra de cada nota. Només canvia classes de #obra (el CSS amaga el que toca),
+// així no cal tornar a dibuixar ni afecta la reproducció. Es recorda entre cançons i visites.
+const VIEW_KEY = 'gralla-vista';
+const view = { pentagrama: true, noms: true, digitacio: true };
+
+function loadView() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(VIEW_KEY) || '{}');
+    for (const key of Object.keys(view)) if (typeof saved[key] === 'boolean') view[key] = saved[key];
+  } catch { /* sense emmagatzematge: es queda la vista completa */ }
+  if (!Object.values(view).some(Boolean)) Object.keys(view).forEach((key) => { view[key] = true; });
+}
+
+function applyView() {
+  els.obra.classList.toggle('sense-pentagrama', !view.pentagrama);
+  els.obra.classList.toggle('sense-noms', !view.noms);
+  els.obra.classList.toggle('sense-digitacio', !view.digitacio);
+  for (const box of els.vista.querySelectorAll('input')) box.checked = view[box.dataset.vista];
+}
+
+els.vista.addEventListener('change', (e) => {
+  const key = e.target.dataset.vista;
+  if (!(key in view)) return;
+  view[key] = e.target.checked;
+  if (!Object.values(view).some(Boolean)) view[key] = true; // almenys una casella marcada
+  applyView();
+  try { localStorage.setItem(VIEW_KEY, JSON.stringify(view)); } catch { /* no es pot desar */ }
+});
 
 function applyTransposition(semitones) {
   const voices = selection === 'totes' ? piece.voices : [piece.voices[selection] ?? piece.voices[0]];
@@ -366,5 +398,7 @@ window.addEventListener('resize', () => {
   }, 150);
 });
 
+loadView();
+applyView();
 buildTable();
 initLibrary();

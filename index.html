@@ -60,6 +60,11 @@
         </div>
         <div class="reproductor-fila controls">
           <div class="veus" id="veus" role="radiogroup" aria-label="Veu" hidden></div>
+          <div class="vista" id="vista" role="group" aria-label="Mostra">
+            <label class="opcio"><input type="checkbox" data-vista="pentagrama" checked><span>Pentagrama</span></label>
+            <label class="opcio"><input type="checkbox" data-vista="noms" checked><span>Notes</span></label>
+            <label class="opcio"><input type="checkbox" data-vista="digitacio" checked><span>Digitació</span></label>
+          </div>
           <label class="tempo">
             <span class="etiqueta">Velocitat</span>
             <input type="range" id="tempo" min="40" max="130" step="5" value="100">

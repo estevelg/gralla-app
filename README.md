@@ -4,6 +4,7 @@ Web-app per a principiants de gralla seca: tries una cançó de la llibreria (o 
 - la pots escoltar (so de xeremia/shanai, oboè o flauta; velocitat ajustable, repetició),
 - veus el pentagrama original i, sota cada nota, el **nom** i el **dibuix de la digitació**,
 - la nota que sona es ressalta i la vista la segueix,
+- a la barra es tria què es veu (caselles **Pentagrama**, **Notes** i **Digitació**, mínim una de marcada) i l'elecció es recorda,
 - pots descarregar-la en **MIDI**.
 
 Les digitacions surten de la taula de la gralla Bessó ([pacobesso.net](https://www.pacobesso.net)),

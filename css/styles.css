@@ -281,6 +281,50 @@ details summary { cursor: pointer; font-weight: 700; }
 .veus button:hover { color: var(--accent); }
 .veus button[aria-checked="true"] { background: var(--accent); color: #fff; }
 .veus button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.vista {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+}
+.opcio { position: relative; display: inline-flex; }
+.opcio input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.opcio span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px 4px 8px;
+  border-radius: 999px;
+  font-weight: 700;
+  white-space: nowrap;
+  color: var(--ink-soft);
+}
+.opcio span::before {
+  content: "";
+  width: 14px;
+  height: 14px;
+  flex: none;
+  border: 2px solid currentColor;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+.opcio:hover span { color: var(--accent); }
+.opcio input:checked + span { background: var(--accent); color: #fff; }
+.opcio input:checked + span::before {
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 6.4l2.3 2.3 4.7-5' fill='none' stroke='%23c8321e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 100% no-repeat;
+  border-color: #fff;
+}
+.opcio input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 1px; }
 .tempo input { width: 140px; accent-color: var(--accent); }
 .tempo output { min-width: 3.2em; font-variant-numeric: tabular-nums; color: var(--ink-soft); }
 .check input { accent-color: var(--accent); width: 18px; height: 18px; }
@@ -339,7 +383,35 @@ input[type="number"] { width: 4.5em; }
   margin-bottom: 6px;
 }
 .fila + .fila { border-top: 1px dashed var(--line); padding-top: 4px; }
-.veu { position: relative; }
+.obra {
+  --staff-h: 132px;  /* pentagrama */
+  --names-h: 24px;   /* nom de la nota */
+  --fing-h: 138px;   /* dibuix de la digitació */
+}
+.veu {
+  position: relative;
+  height: calc(var(--staff-h) + var(--names-h) + var(--fing-h));
+}
+.veu .nota { top: var(--staff-h); }
+.compas {
+  display: none;
+  position: absolute;
+  top: var(--staff-h);
+  bottom: 0;
+  border-left: 1px dotted var(--line);
+}
+
+/* Mode de visualització (caselles Pentagrama / Notes / Digitació) */
+.obra.sense-pentagrama { --staff-h: 20px; }
+.obra.sense-pentagrama .pentagrama { display: none; }
+.obra.sense-pentagrama .compas { display: block; }
+.obra.sense-noms { --names-h: 0px; }
+.obra.sense-noms .veu .nota .nom { display: none; }
+.obra.sense-digitacio { --fing-h: 0px; }
+.obra.sense-digitacio .veu .nota .digitacio,
+.obra.sense-digitacio .veu .nota .bufa,
+.obra.sense-digitacio .llegenda { display: none; }
+.obra.sense-noms.sense-digitacio .veu .nota { display: none; }
 .veu + .veu { border-top: 1px dotted var(--line); }
 .veu-nom {
   position: absolute;
@@ -460,6 +532,9 @@ input[type="number"] { width: 4.5em; }
   .timbre .etiqueta, #midi .etiqueta { display: none; }
   .veus { flex: 1 1 100%; }
   .veus button { flex: 1; padding: 4px 6px; }
+  .vista { flex: 1 1 100%; justify-content: space-between; }
+  .opcio { flex: 1; }
+  .opcio span { flex: 1; justify-content: center; padding: 4px 6px; }
   .tempo { flex: 1 1 100%; }
   .tempo input { flex: 1; width: auto; }
   select, .boto-text { padding: 4px 8px; }
