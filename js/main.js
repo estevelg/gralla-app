@@ -247,15 +247,13 @@ function preparePrint() {
   const title = document.createElement('h1');
   title.className = 'impressio-titol';
   title.textContent = piece.title || 'Partitura';
-  if (piece.voices.length > 1 && shown.length === 1) { // amb les dues veus ja surt l'etiqueta a cada pentagrama
-    const voice = document.createElement('span');
-    voice.className = 'impressio-veus';
-    voice.textContent = shown[0].nom;
-    title.append(voice);
-  }
   out.append(title);
-  const legend = document.querySelector('.llegenda');
-  if (view.digitacio && legend) out.append(legend.cloneNode(true));
+  if (piece.voices.length > 1) { // només si la cançó té diverses veus: «1a veu», «2a veu», «1a + 2a veu»
+    const voices = document.createElement('p');
+    voices.className = 'impressio-subtitol';
+    voices.textContent = `${shown.map((v) => v.nom.split(/\s+/)[0]).join(' + ')} veu`;
+    out.append(voices);
+  }
 
   const scale = view.digitacio ? PRINT_FINGERING_SCALE : 1;
   const sheet = document.createElement('div');
