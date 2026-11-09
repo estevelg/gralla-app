@@ -237,7 +237,7 @@ const PRINT_HEIGHT = mmToPx(132);
 // Mides de la partitura per imprimir (1 = la de la pantalla), de més gran a més petita: s'agafa la
 // més gran que fa que tota la cançó càpiga en un sol full. Si ni amb la més petita hi cap, s'usa
 // una mida intermèdia i la cançó ocupa diversos fulls (les files no es parteixen).
-const PRINT_SCALES = [0.7, 0.65, 0.6, 0.55, 0.5, 0.45, 0.4];
+const PRINT_SCALES = [0.7, 0.65, 0.6, 0.55, 0.5, 0.45, 0.4, 0.35];
 const PRINT_MULTIPAGE_SCALE = 0.5;
 
 // Dibuixa una còpia de la partitura pensada per a paper (amb la vista, la veu i la
@@ -263,7 +263,9 @@ function preparePrint() {
   const sheet = document.createElement('div');
   sheet.className = 'impressio-partitura';
   out.append(sheet);
-  const room = PRINT_HEIGHT - out.offsetHeight - 6; // alçada que queda per a la partitura al full
+  // Alçada que queda per a la partitura al full. Es deixa un marge de seguretat perquè en imprimir el
+  // navegador reparteix les files amb uns píxels de diferència i una fila podria passar al full següent.
+  const room = PRINT_HEIGHT - out.offsetHeight - 12;
   // Sense targetes de digitació, les notes no necessiten tant d'espai i hi caben més compassos per fila.
   const noteWidth = view.digitacio ? 46 : view.noms ? 38 : 28;
 
