@@ -124,6 +124,7 @@ export function parseMusicXML(xmlText) {
           const rep = el.querySelector('repeat');
           if (rep?.getAttribute('direction') === 'forward') m.repeatStart = true;
           if (rep?.getAttribute('direction') === 'backward') m.repeatEnd = Number(rep.getAttribute('times')) || 2;
+          if (childText(el, 'bar-style') === 'light-light') m.doubleBar = true; // doble barra (canvi de secció o de tonalitat)
           const end = el.querySelector('ending');
           if (end?.getAttribute('type') === 'start') {
             const numbers = (end.getAttribute('number') || '1').split(/[,\s]+/).filter(Boolean).map(Number);

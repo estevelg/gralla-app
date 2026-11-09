@@ -67,7 +67,7 @@ function addMarks(stave, m) {
 function headerWidth(m, isRowStart, isFirst) {
   let w = 0;
   if (isRowStart) w += 34 + Math.abs(m.fifths) * 10;
-  else if (m.keyChange) w += 12 + Math.abs(m.fifths) * 10;
+  else if (m.keyChange) w += 32 + Math.abs(m.fifths) * 10; // + bequadres de cancel·lació
   if (isFirst || m.timeChange) w += 26;
   if (m.repeatStart) w += 12;
   return w;
@@ -169,12 +169,14 @@ export function renderScore(container, voices, { onNoteClick, width: forcedWidth
           if (m.fifths) stave.addKeySignature(KEYS[m.fifths]);
           if (m.index > 0 && vIdx === 0) stave.setMeasure(Number(m.number) || m.index + 1);
         } else if (m.keyChange) {
-          stave.addKeySignature(KEYS[m.fifths]);
+          // Amb el canvi de tonalitat, bequadres que anul·len l'armadura anterior.
+          stave.addKeySignature(KEYS[m.fifths], KEYS[score.measures[m.index - 1]?.fifths ?? m.fifths]);
         }
         if (first || m.timeChange) stave.addTimeSignature(`${m.beats}/${m.beatType}`);
         if (m.repeatStart) stave.setBegBarType(Barline.type.REPEAT_BEGIN);
         if (m.repeatEnd) stave.setEndBarType(Barline.type.REPEAT_END);
         else if (m.index === score.measures.length - 1) stave.setEndBarType(Barline.type.END);
+        else if (m.doubleBar) stave.setEndBarType(Barline.type.DOUBLE);
         if (m.endings && vIdx === 0) { // les caselles 1a/2a només sobre el pentagrama de dalt
           const type = m.endingStart && m.endingStop ? VoltaType.BEGIN_END
             : m.endingStart ? VoltaType.BEGIN
