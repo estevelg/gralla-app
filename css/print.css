@@ -43,8 +43,10 @@ body:has(#impressio:not(:empty)) > :not(#impressio) { display: none !important; 
   break-after: avoid;
 }
 
-/* Una fila (amb les seves veus) no es parteix entre dues pàgines. */
-#impressio .fila {
+/* Quan la cançó ocupa diversos fulls, una fila (amb les seves veus) no es parteix entre dues pàgines.
+   Quan tot ha de cabre en un sol full no s'activa: amb el zoom, el navegador passaria files al full següent
+   encara que hi caben. */
+#impressio.diversos-fulls .fila {
   break-inside: avoid;
   page-break-inside: avoid;
 }

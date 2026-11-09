@@ -263,9 +263,9 @@ function preparePrint() {
   const sheet = document.createElement('div');
   sheet.className = 'impressio-partitura';
   out.append(sheet);
-  // Alçada que queda per a la partitura al full. Es deixa un marge de seguretat perquè en imprimir el
-  // navegador reparteix les files amb uns píxels de diferència i una fila podria passar al full següent.
-  const room = PRINT_HEIGHT - out.offsetHeight - 12;
+  // Alçada que queda per a la partitura al full. Es deixa un marge de seguretat: mesurat en proves, amb
+  // un total de 468 px encara hi cap en un full A5 (499 px teòrics) però amb 481 px el navegador afegeix un full en blanc.
+  const room = PRINT_HEIGHT - out.offsetHeight - 28;
   // Sense targetes de digitació, les notes no necessiten tant d'espai i hi caben més compassos per fila.
   const noteWidth = view.digitacio ? 46 : view.noms ? 38 : 28;
 
@@ -285,6 +285,7 @@ function preparePrint() {
   if (scale === null) {
     scale = PRINT_MULTIPAGE_SCALE;
     draw(scale);
+    out.classList.add('diversos-fulls');
   }
   sheet.style.zoom = scale;
 }
