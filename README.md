@@ -28,8 +28,8 @@ Les cançons són a `partitures/`: un fitxer `.musicxml` per veu i el catàleg `
 Cançó d'una sola veu:
 
 ```json
-{ "id": "germa-jaume", "titol": "Germà Jaume", "fitxer": "germa-jaume.musicxml",
-  "categoria": "Exercicis", "notes": "Tradicional" }
+{ "id": "hereu-riera", "titol": "L'hereu Riera", "fitxer": "hereu-riera.musicxml",
+  "categoria": "Repertori", "notes": "Tradicional" }
 ```
 
 Cançó amb diverses veus (a la web es tria 1a gralla, 2a gralla o totes alhora). Totes les veus

@@ -39,9 +39,11 @@ export function renderCatalog(container, emptyEl, catalog, onPick) {
   for (const [cat, entries] of categories) {
     const group = document.createElement('section');
     group.className = 'categoria';
-    const h = document.createElement('h3');
-    h.textContent = cat;
-    group.append(h);
+    if (categories.size > 1) { // amb una sola categoria el títol sobra
+      const h = document.createElement('h3');
+      h.textContent = cat;
+      group.append(h);
+    }
     const list = document.createElement('div');
     list.className = 'targetes';
     for (const entry of entries) {
