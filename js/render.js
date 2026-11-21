@@ -134,6 +134,7 @@ export function renderScore(container, voices, { onNoteClick, width: forcedWidth
     voices.forEach(({ nom, score }, vIdx) => {
       const bandEl = document.createElement('div');
       bandEl.className = 'veu';
+      if (vIdx > 0) bandEl.classList.add(`veu-${Math.min(vIdx + 1, 3)}`); // 2a veu: vermell fosc; 3a: gris fosc
       const staffEl = document.createElement('div');
       staffEl.className = 'pentagrama';
       bandEl.append(staffEl);

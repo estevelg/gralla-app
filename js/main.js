@@ -5,6 +5,7 @@ import { fingeringSVG } from './fingering-svg.js';
 import { Player } from './player.js';
 import { buildMidi, downloadMidi } from './midi-export.js';
 import { loadCatalog, fetchPiece, renderCatalog, markSelected } from './library.js';
+import { iniciaAfinador } from './afinador.js';
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -44,6 +45,7 @@ let active = [];
 const player = new Player({
   onMark: highlight,
   onState: (state) => {
+    if (state !== 'playing') followedRow = null;
     els.play.classList.toggle('sonant', state === 'playing');
     els.play.setAttribute('aria-label', state === 'playing' ? 'Pausa' : 'Reprodueix');
   },
@@ -366,13 +368,28 @@ function highlight(ids) {
   followRow(row);
 }
 
+// Durant la reproducció, la vista es desplaça amb antelació: sempre es veu la fila que sona i, a sota,
+// la següent, perquè el músic pugui llegir endavant (no només quan l'última nota arriba al final).
+let followedRow = null; // última fila per a la qual s'ha calculat el desplaçament (només es recalcula en canviar)
 function followRow(row) {
-  if (player.state !== 'playing' || !row) return;
-  const bar = document.getElementById('reproductor').getBoundingClientRect();
-  const r = row.getBoundingClientRect();
-  if (r.top < bar.bottom + 8 || r.bottom > window.innerHeight - 8) {
-    window.scrollTo({ top: window.scrollY + r.top - bar.bottom - 16, behavior: 'smooth' });
+  if (player.state !== 'playing' || !row || row === followedRow) return;
+  followedRow = row;
+  const barBottom = document.getElementById('reproductor').getBoundingClientRect().bottom;
+  const top = barBottom + 8;                 // límit superior de la zona visible (sota la barra fixa)
+  const bottom = window.innerHeight - 8;     // límit inferior
+  const cur = row.getBoundingClientRect();
+  const nextEl = row.nextElementSibling;
+  const next = nextEl?.classList.contains('fila') ? nextEl.getBoundingClientRect() : null;
+  const blockBottom = next ? next.bottom : cur.bottom;
+  let delta = 0;
+  if (blockBottom - cur.top > bottom - top) {
+    delta = cur.top - top;                   // no hi caben les dues files: la que sona, just sota la barra
+  } else if (cur.top < top) {
+    delta = cur.top - top;                   // la fila que sona ha quedat amagada sota la barra
+  } else if (blockBottom > bottom) {
+    delta = blockBottom - bottom;            // la següent no es veu sencera: el mínim necessari
   }
+  if (Math.abs(delta) >= 4) window.scrollTo({ top: window.scrollY + delta, behavior: 'smooth' });
 }
 
 function onNoteClick(note) {
@@ -470,3 +487,4 @@ loadView();
 applyView();
 buildTable();
 initLibrary();
+iniciaAfinador({ alObrir: () => player.pause() }); // l'afinador pausa la reproducció perquè el micròfon no escolti l'app

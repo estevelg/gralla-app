@@ -3,9 +3,11 @@
 Web-app per a principiants de gralla seca: tries una cançó de la llibreria (o carregues un MusicXML propi) i
 - la pots escoltar (so de xeremia/shanai, oboè o flauta; velocitat ajustable, repetició),
 - veus el pentagrama original i, sota cada nota, el **nom** i el **dibuix de la digitació**,
-- la nota que sona es ressalta i la vista la segueix,
+- la nota que sona es ressalta i la vista la segueix amb antelació (sempre es veu la fila següent, per llegir endavant),
+- amb les dues veus juntes, la 2a es veu en vermell molt fosc,
 - a la barra es tria què es veu (caselles **Pentagrama**, **Notes** i **Digitació**, mínim una de marcada) i l'elecció es recorda,
 - pots descarregar-la en **MIDI**.
+- hi ha un **afinador de gralla** (botó «Afinador»): tries la nota (Sol greu, Do, Sol agut o qualsevol altra), actives el micròfon i una barra mostra la desviació en cents; és verda dins de ±10 cents,
 - pots **imprimir-la** (botó «Imprimeix»): A5 apaisat, amb el títol i la vista, la veu i la transposició que tinguis seleccionades, per posar-la al faristol; la mida es tria sola (entre el 70 % i el 40 %) perquè tota la cançó càpiga, si pot ser, en un sol full,
 
 Les digitacions surten de la taula de la gralla Bessó ([pacobesso.net](https://www.pacobesso.net)),
@@ -68,6 +70,7 @@ GitHub Pages s'actualitza sol en un parell de minuts.
 | `js/render.js` | Pentagrama amb VexFlow + nom i digitació sota cada nota |
 | `js/player.js` | Reproducció amb Web Audio (smplr, sons General MIDI) |
 | `js/midi-export.js` | Exportació a fitxer MIDI |
+| `js/afinador.js` | Afinador: detecció de la freqüència pel micròfon (YIN) i la seva interfície |
 | `js/library.js` | Llista de cançons, cercador i enllaços directes |
 | `css/print.css` | Estils d'impressió (A5 apaisat, sempre en clar); la còpia per a paper es dibuixa a `preparePrint()` de `js/main.js` |
 | `partitures/` | Llibreria de partitures i catàleg `index.json` |

@@ -16,9 +16,12 @@
 </head>
 <body>
   <header class="capcalera">
-    <div class="amplada">
-      <h1><a href="./">Que sonin les gralles!</a></h1>
-      <p>Tria una cançó, escolta-la i mira quina digitació has de fer a cada nota.</p>
+    <div class="amplada capcalera-fila">
+      <div>
+        <h1><a href="./">Que sonin les gralles!</a></h1>
+        <p>Tria una cançó, escolta-la i mira quina digitació has de fer a cada nota.</p>
+      </div>
+      <button type="button" class="boto-text" id="obre-afinador" title="Afinador de gralla amb el micròfon">Afinador</button>
     </div>
   </header>
 
@@ -117,6 +120,41 @@
   <footer class="peu amplada">
     <p>Web-app per a principiants de gralla seca.</p>
   </footer>
+
+  <dialog id="afinador" class="afinador" aria-labelledby="afinador-titol">
+    <div class="afinador-cap">
+      <h2 id="afinador-titol">Afinador de gralla</h2>
+      <button type="button" class="boto" id="afinador-tanca" aria-label="Tanca l'afinador">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg>
+      </button>
+    </div>
+    <p class="afinador-ajuda">Tria la nota que vas a tocar, activa el micròfon i bufa-la. El centre de la barra és la nota correcta.</p>
+
+    <div class="afinador-notes" role="radiogroup" aria-label="Nota de referència">
+      <button type="button" role="radio" aria-checked="true" data-midi="67">Sol greu</button>
+      <button type="button" role="radio" aria-checked="false" data-midi="72">Do</button>
+      <button type="button" role="radio" aria-checked="false" data-midi="79">Sol agut</button>
+    </div>
+    <div class="afinador-opcions">
+      <label>Altra nota <select id="afinador-altra"></select></label>
+      <label>La = <input type="number" id="afinador-la" min="430" max="450" step="1" value="440"> Hz</label>
+    </div>
+
+    <div class="afinador-lectura" aria-live="polite">
+      <div class="afinador-cents" id="afinador-cents">—</div>
+      <div class="afinador-hz" id="afinador-hz"></div>
+    </div>
+
+    <div class="afinador-barra" id="afinador-barra" role="img" aria-label="Desviació respecte a la nota de referència, de −100 a +100 cents">
+      <div class="afinador-agulla" id="afinador-agulla" hidden></div>
+    </div>
+    <div class="afinador-escala" aria-hidden="true">
+      <span>−100</span><span>−50</span><span id="afinador-centre">Sol4</span><span>+50</span><span>+100</span>
+    </div>
+    <p class="afinador-estat" id="afinador-estat" role="status"></p>
+
+    <button type="button" class="boto-text afinador-mic" id="afinador-mic">Activa el micròfon</button>
+  </dialog>
 
   <!-- Còpia de la partitura pensada per a paper: es dibuixa en imprimir (js/main.js, preparePrint). -->
   <div id="impressio" class="obra" aria-hidden="true"></div>

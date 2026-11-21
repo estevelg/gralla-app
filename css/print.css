@@ -11,6 +11,8 @@ html:root:root:root {
   --paper: #fff;
   --surface: #fff;
   --ink: #000;
+  --ink-2: #000;   /* a paper en blanc i negre, les veus es distingeixen per l'etiqueta 1A/2A */
+  --ink-3: #000;
   --ink-soft: #333;
   --line: #8a8a8a;
   --accent: #b00020;
