@@ -8,39 +8,40 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=323cff89">
-  <link rel="stylesheet" href="css/print.css?v=323cff89" media="print">
+  <link rel="stylesheet" href="css/styles.css?v=4274e22b">
+  <link rel="stylesheet" href="css/print.css?v=4274e22b" media="print">
   <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.5/build/cjs/vexflow.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
   <!-- importmap:inici -->
   <script type="importmap">
   {
     "imports": {
-      "./js/afinador.js": "./js/afinador.js?v=323cff89",
-      "./js/fingering-svg.js": "./js/fingering-svg.js?v=323cff89",
-      "./js/fingerings.js": "./js/fingerings.js?v=323cff89",
-      "./js/library.js": "./js/library.js?v=323cff89",
-      "./js/midi-export.js": "./js/midi-export.js?v=323cff89",
-      "./js/musicxml.js": "./js/musicxml.js?v=323cff89",
-      "./js/player.js": "./js/player.js?v=323cff89",
-      "./js/render.js": "./js/render.js?v=323cff89"
+      "./js/afinador.js": "./js/afinador.js?v=4274e22b",
+      "./js/fingering-svg.js": "./js/fingering-svg.js?v=4274e22b",
+      "./js/fingerings.js": "./js/fingerings.js?v=4274e22b",
+      "./js/library.js": "./js/library.js?v=4274e22b",
+      "./js/midi-export.js": "./js/midi-export.js?v=4274e22b",
+      "./js/musicxml.js": "./js/musicxml.js?v=4274e22b",
+      "./js/player.js": "./js/player.js?v=4274e22b",
+      "./js/render.js": "./js/render.js?v=4274e22b"
     }
   }
   </script>
   <!-- importmap:fi -->
-  <script type="module" src="js/main.js?v=323cff89"></script>
+  <script type="module" src="js/main.js?v=4274e22b"></script>
 </head>
 <body>
   <header class="capcalera">
-    <div class="amplada capcalera-fila">
-      <div>
+    <div class="amplada">
+      <div class="capcalera-fila">
         <h1><a href="./">Que sonin les gralles!</a></h1>
-        <p>Tria una cançó, escolta-la i mira quina digitació has de fer a cada nota.</p>
-      </div>
-      <button type="button" class="boto-afinador" id="obre-afinador" title="Afinador de gralla amb el micròfon">
+        <button type="button" class="boto-afinador" id="obre-afinador" title="Afinador de gralla amb el micròfon">
         <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.5v9a4 4 0 0 0 8 0v-9"/><path d="M12 15.5v6"/></svg>
         <span>Afinador</span>
       </button>
+      </div>
+      <div class="capcalera-barra" aria-hidden="true"></div>
+      <p>Tria una cançó, escolta-la i mira quina digitació has de fer a cada nota.</p>
     </div>
   </header>
 
