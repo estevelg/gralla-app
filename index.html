@@ -8,11 +8,27 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="css/print.css" media="print">
+  <link rel="stylesheet" href="css/styles.css?v=323cff89">
+  <link rel="stylesheet" href="css/print.css?v=323cff89" media="print">
   <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.5/build/cjs/vexflow.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
-  <script type="module" src="js/main.js"></script>
+  <!-- importmap:inici -->
+  <script type="importmap">
+  {
+    "imports": {
+      "./js/afinador.js": "./js/afinador.js?v=323cff89",
+      "./js/fingering-svg.js": "./js/fingering-svg.js?v=323cff89",
+      "./js/fingerings.js": "./js/fingerings.js?v=323cff89",
+      "./js/library.js": "./js/library.js?v=323cff89",
+      "./js/midi-export.js": "./js/midi-export.js?v=323cff89",
+      "./js/musicxml.js": "./js/musicxml.js?v=323cff89",
+      "./js/player.js": "./js/player.js?v=323cff89",
+      "./js/render.js": "./js/render.js?v=323cff89"
+    }
+  }
+  </script>
+  <!-- importmap:fi -->
+  <script type="module" src="js/main.js?v=323cff89"></script>
 </head>
 <body>
   <header class="capcalera">

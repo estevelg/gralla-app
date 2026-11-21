@@ -56,6 +56,10 @@ GitHub Pages s'actualitza sol en un parell de minuts.
 
 ## Publicar a GitHub Pages
 
+**Abans de cada commit que toqui `css/` o `js/`, executa `python3 versiona.py`.** Posa una versió a les adreces
+del CSS i dels mòduls a l'`index.html` (i un mapa d'importacions). Sense això, GitHub Pages deixa que el navegador
+guardi 10 minuts els fitxers antics i la web es veu trencada (HTML nou amb estils o codi vell).
+
 1. Puja aquesta carpeta a un repositori de GitHub.
 2. *Settings → Pages → Build and deployment*: font **Deploy from a branch**, branca `main`, carpeta `/ (root)`.
 3. En un parell de minuts la web serà a `https://<usuari>.github.io/<repositori>/`.
