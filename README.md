@@ -64,6 +64,17 @@ guardi 10 minuts els fitxers antics i la web es veu trencada (HTML nou amb estil
 2. *Settings → Pages → Build and deployment*: font **Deploy from a branch**, branca `main`, carpeta `/ (root)`.
 3. En un parell de minuts la web serà a `https://<usuari>.github.io/<repositori>/`.
 
+## Publicar a 100webspace (o un altre allotjament) a mà
+
+```bash
+./crea-zip.sh
+```
+
+Crea `~/Downloads/gralla-app-web.zip` amb només els fitxers de la web (`index.html`, `css/`, `js/`, `partitures/`).
+Al Gestor de fitxers de l'allotjament: obre la carpeta pública (normalment `public_html`), esborra-hi la pàgina
+per defecte, puja el ZIP i extreu-lo (els fitxers han de quedar directament dins la carpeta, no dins una subcarpeta).
+L'afinador usa el micròfon, que els navegadors només permeten en **https**: comprova que l'adreça comença per `https://`.
+
 ## Estructura
 
 | Fitxer | Què fa |
