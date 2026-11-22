@@ -6,7 +6,8 @@ Web-app per a principiants de gralla seca: tries una cançó de la llibreria (o 
 - la nota que sona es ressalta i la vista la segueix amb antelació (sempre es veu la fila següent, per llegir endavant),
 - amb les dues veus juntes, la 2a es veu en vermell molt fosc,
 - a la barra es tria què es veu (caselles **Pentagrama**, **Notes** i **Digitació**, mínim una de marcada) i l'elecció es recorda,
-- pots descarregar-la en **MIDI**.
+- pots descarregar-la en **MIDI**,
+- hi ha un formulari de **Contacte** (només a l'allotjament amb PHP; a GitHub Pages es mostra un enllaç a aquest),
 - hi ha un **afinador de gralla** (botó «Afinador»): tries la nota (Sol greu, Do, Sol agut o qualsevol altra), actives el micròfon i una barra mostra la desviació en cents; és verda dins de ±10 cents,
 - pots **imprimir-la** (botó «Imprimeix»): A5 apaisat, amb el títol i la vista, la veu i la transposició que tinguis seleccionades, per posar-la al faristol; la mida es tria sola (entre el 70 % i el 40 %) perquè tota la cançó càpiga, si pot ser, en un sol full,
 
@@ -75,6 +76,16 @@ Al Gestor de fitxers de l'allotjament: obre la carpeta pública (normalment `pub
 per defecte, puja el ZIP i extreu-lo (els fitxers han de quedar directament dins la carpeta, no dins una subcarpeta).
 L'afinador usa el micròfon, que els navegadors només permeten en **https**: comprova que l'adreça comença per `https://`.
 
+## Formulari de contacte
+
+`contacte.php` rep el formulari (`js/contacte.js`) i l'envia per correu amb `mail()`, amb camp parany, temps mínim,
+límit de 3 missatges/hora per IP i neteja de capçaleres. **L'adreça de destí no és al repositori** (és públic): és a
+`contacte-config.php`, que està a `.gitignore` i només existeix en local i al servidor (`crea-zip.sh` l'inclou al ZIP):
+
+```php
+<?php return ['destinatari' => 'tu@exemple.com', 'remitent' => 'no-reply@exemple.com'];
+```
+
 ## Estructura
 
 | Fitxer | Què fa |
@@ -86,6 +97,7 @@ L'afinador usa el micròfon, que els navegadors només permeten en **https**: co
 | `js/player.js` | Reproducció amb Web Audio (smplr, sons General MIDI) |
 | `js/midi-export.js` | Exportació a fitxer MIDI |
 | `js/afinador.js` | Afinador: detecció de la freqüència pel micròfon (YIN) i la seva interfície |
+| `js/contacte.js`, `contacte.php` | Formulari de contacte (JS al navegador, PHP al servidor) |
 | `js/library.js` | Llista de cançons, cercador i enllaços directes |
 | `css/print.css` | Estils d'impressió (A5 apaisat, sempre en clar); la còpia per a paper es dibuixa a `preparePrint()` de `js/main.js` |
 | `partitures/` | Llibreria de partitures i catàleg `index.json` |

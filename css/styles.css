@@ -543,7 +543,7 @@ input[type="number"] { width: 4.5em; }
 .pista { color: var(--ink-soft); font-size: .9rem; margin: 8px 0 0; }
 
 /* Taula completa */
-.taula, .avancat {
+.taula, .avancat, .contacte {
   margin: 24px 0 0;
   padding: 14px 16px;
   border: 1px solid var(--line);
@@ -568,7 +568,31 @@ input[type="number"] { width: 4.5em; }
 .font, .nota-petita { color: var(--ink-soft); font-size: .88rem; }
 .avancat label { display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; }
 
+/* Contacte */
+.contacte summary { font-weight: 600; cursor: pointer; }
+.contacte-form { display: grid; gap: 12px; margin-top: 12px; max-width: 520px; }
+.contacte-form label { display: grid; gap: 4px; font-weight: 600; font-size: .9rem; }
+.contacte-form input[type="text"], .contacte-form input[type="email"], .contacte-form textarea {
+  font: inherit;
+  font-weight: 400;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  width: 100%;
+  box-sizing: border-box;
+}
+.contacte-form textarea { resize: vertical; }
+.contacte-form input:focus-visible, .contacte-form textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.contacte-trampa { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; } /* camp parany anti-spam */
+.contacte-peu { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.contacte-estat { margin: 0; font-size: .9rem; }
+.contacte-estat.ok { color: var(--ok); font-weight: 600; }
+.contacte-estat.ko { color: var(--accent); font-weight: 600; }
+
 .peu { padding: 28px 16px 36px; color: var(--ink-soft); font-size: .88rem; }
+.peu p { margin: 0 0 6px; }
 
 @media (max-width: 560px) {
   .reproductor { padding: 10px; gap: 8px; }

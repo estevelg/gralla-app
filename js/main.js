@@ -6,6 +6,7 @@ import { Player } from './player.js';
 import { buildMidi, downloadMidi } from './midi-export.js';
 import { loadCatalog, fetchPiece, renderCatalog, markSelected } from './library.js';
 import { iniciaAfinador } from './afinador.js';
+import { iniciaContacte } from './contacte.js';
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -487,4 +488,5 @@ loadView();
 applyView();
 buildTable();
 initLibrary();
+iniciaContacte();
 iniciaAfinador({ alObrir: () => player.pause() }); // l'afinador pausa la reproducció perquè el micròfon no escolti l'app

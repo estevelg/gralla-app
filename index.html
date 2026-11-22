@@ -8,27 +8,28 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=4274e22b">
-  <link rel="stylesheet" href="css/print.css?v=4274e22b" media="print">
+  <link rel="stylesheet" href="css/styles.css?v=3ae3d328">
+  <link rel="stylesheet" href="css/print.css?v=3ae3d328" media="print">
   <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.5/build/cjs/vexflow.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
   <!-- importmap:inici -->
   <script type="importmap">
   {
     "imports": {
-      "./js/afinador.js": "./js/afinador.js?v=4274e22b",
-      "./js/fingering-svg.js": "./js/fingering-svg.js?v=4274e22b",
-      "./js/fingerings.js": "./js/fingerings.js?v=4274e22b",
-      "./js/library.js": "./js/library.js?v=4274e22b",
-      "./js/midi-export.js": "./js/midi-export.js?v=4274e22b",
-      "./js/musicxml.js": "./js/musicxml.js?v=4274e22b",
-      "./js/player.js": "./js/player.js?v=4274e22b",
-      "./js/render.js": "./js/render.js?v=4274e22b"
+      "./js/afinador.js": "./js/afinador.js?v=3ae3d328",
+      "./js/contacte.js": "./js/contacte.js?v=3ae3d328",
+      "./js/fingering-svg.js": "./js/fingering-svg.js?v=3ae3d328",
+      "./js/fingerings.js": "./js/fingerings.js?v=3ae3d328",
+      "./js/library.js": "./js/library.js?v=3ae3d328",
+      "./js/midi-export.js": "./js/midi-export.js?v=3ae3d328",
+      "./js/musicxml.js": "./js/musicxml.js?v=3ae3d328",
+      "./js/player.js": "./js/player.js?v=3ae3d328",
+      "./js/render.js": "./js/render.js?v=3ae3d328"
     }
   }
   </script>
   <!-- importmap:fi -->
-  <script type="module" src="js/main.js?v=4274e22b"></script>
+  <script type="module" src="js/main.js?v=3ae3d328"></script>
 </head>
 <body>
   <header class="capcalera">
@@ -135,10 +136,28 @@
       </label>
       <p class="nota-petita">Útil si la partitura està escrita en un altre to i moltes notes surten fora del registre de la gralla.</p>
     </details>
+
+    <!-- Només es mostra a l'allotjament que té PHP (js/contacte.js); l'adreça de destí és al servidor, no aquí. -->
+    <details class="contacte" id="contacte" hidden>
+      <summary>Contacte</summary>
+      <p class="nota-petita">Un suggeriment, un error en una partitura o una cançó que t'agradaria veure aquí? Escriu-me.</p>
+      <form class="contacte-form" id="contacte-form" novalidate>
+        <label>Nom <input type="text" name="nom" maxlength="100" autocomplete="name" required></label>
+        <label>Correu electrònic <input type="email" name="email" maxlength="150" autocomplete="email" required></label>
+        <label>Missatge <textarea name="missatge" rows="5" minlength="10" maxlength="3000" required></textarea></label>
+        <div class="contacte-trampa" aria-hidden="true"><label>No omplis això <input type="text" name="web" tabindex="-1" autocomplete="off"></label></div>
+        <input type="hidden" name="t" value="">
+        <div class="contacte-peu">
+          <button type="submit" class="boto-text" id="contacte-envia">Envia</button>
+          <p class="contacte-estat" id="contacte-estat" role="status" aria-live="polite"></p>
+        </div>
+      </form>
+    </details>
   </main>
 
   <footer class="peu amplada">
     <p>Web-app per a principiants de gralla seca.</p>
+    <p id="contacte-enllac" hidden>Per contactar, visita <a href="https://www.estevelopez.com/gralla-app/#contacte">www.estevelopez.com/gralla-app</a>.</p>
   </footer>
 
   <dialog id="afinador" class="afinador" aria-labelledby="afinador-titol">
