@@ -80,7 +80,8 @@ L'afinador usa el micròfon, que els navegadors només permeten en **https**: co
 
 `contacte.php` rep el formulari (`js/contacte.js`) i l'envia per correu amb `mail()`. Contra el spam: camp parany,
 testimoni signat pel servidor (d'un sol ús, amb temps mínim i caducitat), màxim 1 enllaç, missatges repetits ignorats,
-límit de 3 missatges/hora per IP i de 30 al dia en total, i neteja de capçaleres. **L'adreça de destí no és al repositori** (és públic): és a
+límit de 3 missatges/hora i 5/dia per IP i de 20 al dia en total, i neteja de capçaleres. L'estat dels límits es desa a
+`contacte-estat.php` (al servidor, no a GitHub); si no es pot desar, el formulari es bloqueja en lloc d'enviar sense límits. **L'adreça de destí no és al repositori** (és públic): és a
 `contacte-config.php`, que està a `.gitignore` i només existeix en local i al servidor (`crea-zip.sh` l'inclou al ZIP):
 
 ```php

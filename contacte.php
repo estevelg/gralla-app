@@ -9,7 +9,8 @@ header('Cache-Control: no-store');
 mb_internal_encoding('UTF-8');
 
 const MAX_PER_IP_HORA = 3;
-const MAX_TOTAL_DIA = 30;
+const MAX_PER_IP_DIA = 5;
+const MAX_TOTAL_DIA = 20;     // encara que algú faci servir moltes IP, la bústia no rep més d'això al dia
 const TEMPS_MIN = 4;           // segons que ha de trigar a omplir-se el formulari
 const TEMPS_MAX = 6 * 3600;    // el testimoni caduca
 
@@ -68,20 +69,31 @@ if (preg_match_all('~https?://|www\.~i', $missatge . ' ' . $nom) > 1) {
 }
 
 // Anti-spam 4: límits compartits (per IP i total diari), testimoni d'un sol ús i missatges repetits.
-// L'estat es desa a la carpeta temporal del servidor, amb bloqueig per evitar curses.
+// L'estat es desa a contacte-estat.php, al costat d'aquest fitxer (no a /tmp, que pot ser compartit o buidar-se).
+// Comença amb una línia PHP que talla l'execució: si algú l'obre des del navegador no veu res.
+// Si no es pot llegir o escriure, el formulari es BLOQUEJA (mai s'envia sense límits).
+const CAPCALERA_ESTAT = "<?php http_response_code(404); exit; ?>\n";
 function amb_estat(callable $f) {
-    $fh = fopen(sys_get_temp_dir() . '/gralla-contacte-estat.json', 'c+');
-    if (!$fh) { $buit = ['enviats' => [], 'tokens' => [], 'ip' => [], 'missatges' => []]; return $f($buit); }
-    flock($fh, LOCK_EX);
-    $estat = json_decode((string)stream_get_contents($fh), true);
+    $fh = @fopen(__DIR__ . '/contacte-estat.php', 'c+');
+    if (!$fh || !flock($fh, LOCK_EX)) {
+        error_log('contacte.php: no es pot obrir contacte-estat.php');
+        respon(503, ['ok' => false, 'error' => 'El formulari no està disponible ara mateix. Torna-ho a provar més tard.']);
+    }
+    $brut = (string)stream_get_contents($fh);
+    if (strncmp($brut, CAPCALERA_ESTAT, strlen(CAPCALERA_ESTAT)) === 0) $brut = substr($brut, strlen(CAPCALERA_ESTAT));
+    $estat = json_decode($brut, true);
     $estat = is_array($estat) ? $estat : [];
     $estat += ['enviats' => [], 'tokens' => [], 'ip' => [], 'missatges' => []];
     $res = $f($estat);
-    ftruncate($fh, 0);
-    rewind($fh);
-    fwrite($fh, json_encode($estat));
+    $nou = CAPCALERA_ESTAT . json_encode($estat);
+    $ok = ftruncate($fh, 0) && rewind($fh) && fwrite($fh, $nou) === strlen($nou);
+    fflush($fh);
     flock($fh, LOCK_UN);
     fclose($fh);
+    if (!$ok) {
+        error_log('contacte.php: no es pot escriure contacte-estat.php');
+        respon(503, ['ok' => false, 'error' => 'El formulari no està disponible ara mateix. Torna-ho a provar més tard.']);
+    }
     return $res;
 }
 
@@ -93,11 +105,13 @@ $resultat = amb_estat(function (array &$e) use ($ara, $ip, $sig, $empremta) {
     $e['enviats'] = array_values(array_filter($e['enviats'], static fn($x) => $x > $dia));
     $e['tokens'] = array_filter($e['tokens'], static fn($x) => $x > $dia);
     $e['missatges'] = array_filter($e['missatges'], static fn($x) => $x > $dia);
-    $e['ip'] = array_filter(array_map(static fn($l) => array_values(array_filter($l, static fn($x) => $x > $hora)), $e['ip']));
+    $e['ip'] = array_filter(array_map(static fn($l) => array_values(array_filter((array)$l, static fn($x) => $x > $dia)), $e['ip']));
 
     if (isset($e['tokens'][$sig])) return 'reutilitzat';
     if (isset($e['missatges'][$empremta])) return 'repetit';
-    if (count($e['ip'][$ip] ?? []) >= MAX_PER_IP_HORA) return 'ip';
+    $de_la_ip = $e['ip'][$ip] ?? [];
+    if (count($de_la_ip) >= MAX_PER_IP_DIA) return 'ip-dia';
+    if (count(array_filter($de_la_ip, static fn($x) => $x > $hora)) >= MAX_PER_IP_HORA) return 'ip';
     if (count($e['enviats']) >= MAX_TOTAL_DIA) return 'dia';
 
     $e['tokens'][$sig] = $ara;
@@ -108,6 +122,7 @@ $resultat = amb_estat(function (array &$e) use ($ara, $ip, $sig, $empremta) {
 });
 if ($resultat === 'repetit') respon(200, ['ok' => true]); // ja rebut: no es reenvia
 if ($resultat === 'reutilitzat') respon(400, ['ok' => false, 'error' => 'Recarrega la pàgina per enviar un altre missatge.']);
+if ($resultat === 'ip-dia') respon(429, ['ok' => false, 'error' => "Has enviat massa missatges avui. Torna-ho a provar demà."]);
 if ($resultat === 'ip') respon(429, ['ok' => false, 'error' => "Has enviat massa missatges. Torna-ho a provar d'aquí a una hora."]);
 if ($resultat === 'dia') respon(429, ['ok' => false, 'error' => "El formulari ha arribat al límit d'avui. Torna-ho a provar demà."]);
 
