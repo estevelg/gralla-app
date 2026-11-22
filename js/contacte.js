@@ -20,10 +20,17 @@ export function iniciaContacte() {
   if (location.hash === '#contacte') seccio.open = true;
 
   const diu = (text, tipus = '') => { estat.textContent = text; estat.className = `contacte-estat ${tipus}`.trim(); };
-  // Moment en què s'ha obert el formulari: el PHP rebutja enviaments sospitosament ràpids (robots).
-  const marca = () => { form.elements.t.value = String(Date.now()); };
-  marca();
-  seccio.addEventListener('toggle', () => { if (seccio.open) marca(); });
+  // Testimoni signat pel servidor: el PHP rebutja enviaments sense testimoni, massa ràpids o repetits (robots).
+  const demanaTestimoni = async () => {
+    form.elements.t.value = '';
+    try {
+      const res = await fetch(`${ENDPOINT}?token=1`, { cache: 'no-store' });
+      const dades = await res.json();
+      if (dades.ok) form.elements.t.value = dades.token;
+    } catch { /* es tornarà a demanar en enviar */ }
+  };
+  seccio.addEventListener('toggle', () => { if (seccio.open && !form.elements.t.value) demanaTestimoni(); });
+  if (seccio.open) demanaTestimoni();
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -37,13 +44,15 @@ export function iniciaContacte() {
     boto.disabled = true;
     diu('Enviant…');
     try {
+      if (!form.elements.t.value) await demanaTestimoni();
       const res = await fetch(ENDPOINT, { method: 'POST', body: new FormData(form) });
       const dades = await res.json().catch(() => ({}));
       if (res.ok && dades.ok) {
         form.reset();
-        marca();
+        form.elements.t.value = ''; // el testimoni és d'un sol ús
         diu('Gràcies! He rebut el missatge i et respondré tan aviat com pugui.', 'ok');
       } else {
+        form.elements.t.value = '';
         diu(dades.error || "No s'ha pogut enviar el missatge. Torna-ho a provar d'aquí a una estona.", 'ko');
       }
     } catch {
