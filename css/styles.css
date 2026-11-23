@@ -98,6 +98,22 @@ a { color: var(--accent); }
   color: inherit;
   text-decoration: none;
 }
+/* Etiqueta «beta» al costat del títol: la web encara canvia sovint. */
+.beta {
+  display: inline-block;
+  vertical-align: .9em;
+  margin-left: 4px;
+  padding: 1px 8px;
+  border: 1.5px solid var(--accent);
+  border-radius: 999px;
+  color: var(--accent);
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  line-height: 1.5;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
 .capcalera-barra {
   width: 56px;
   height: 5px;
