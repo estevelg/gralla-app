@@ -34,7 +34,6 @@ const els = {
   vista: $('#vista'),
   imprimeix: $('#imprimeix'),
   impressio: $('#impressio'),
-  filtres: $('#filtres'),
   llegenda: $('#llegenda'),
   midaMenys: $('#mida-menys'),
   midaMes: $('#mida-mes'),
@@ -143,7 +142,7 @@ function openFromHash({ scroll = true } = {}) {
 async function initLibrary() {
   try {
     catalog = await loadCatalog();
-    const filter = renderCatalog(els.llista, els.llistaBuida, catalog, (entry) => loadFromLibrary(entry), els.filtres);
+    const filter = renderCatalog(els.llista, els.llistaBuida, catalog, (entry) => loadFromLibrary(entry));
     els.cerca.addEventListener('input', () => filter(els.cerca.value));
     openFromHash();
   } catch (err) {

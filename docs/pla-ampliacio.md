@@ -23,7 +23,7 @@ Va per fases. La fase 1 val la pena fer-la ja, encara que no arribin colles nove
 
 ## Fase 1: mòbil i llibreria escalable — FETA (novembre 2026)
 
-Estat: feta. Llista compacta amb filtres per `tipus`, barra lateral a l'ordinador, vistes separades al mòbil
+Estat: feta. Llista compacta (el cercador també troba per `tipus`; els botons de filtre es van treure perquè no es faran servir), barra lateral a l'ordinador, vistes separades al mòbil
 («← Cançons»), zoom de la partitura amb A− / A+, menú «⋯» al mòbil i llegenda plegable. La vista compacta
 automàtica al mòbil no s'ha fet: amb el zoom ja no cal.
 

@@ -25,12 +25,11 @@ export function fetchPiece(entry) {
   }));
 }
 
-// Tipus d'una cançó (cercavila, pasdoble…): "tipus" pot ser un text o una llista.
+// Tipus d'una cançó (cercavila, pasdoble…), per al cercador: "tipus" pot ser un text o una llista.
 const entryTypes = (entry) => [].concat(entry.tipus ?? []).filter(Boolean);
 
-// Pinta la llista agrupada per categoria i, si el catàleg té tipus, els botons per filtrar-hi (`chipsEl`).
-// Retorna una funció per filtrar la llista pel text del cercador.
-export function renderCatalog(container, emptyEl, catalog, onPick, chipsEl = null) {
+// Pinta la llista agrupada per categoria. Retorna una funció per filtrar-la pel text del cercador.
+export function renderCatalog(container, emptyEl, catalog, onPick) {
   const categories = new Map();
   for (const entry of catalog) {
     const cat = entry.categoria || 'Altres';
@@ -66,42 +65,18 @@ export function renderCatalog(container, emptyEl, catalog, onPick, chipsEl = nul
       });
       list.append(a);
       const types = entryTypes(entry);
-      items.push({ el: a, group, types, text: normalize(`${entry.titol} ${cat} ${meta} ${types.join(' ')}`) });
+      items.push({ el: a, group, text: normalize(`${entry.titol} ${cat} ${meta} ${types.join(' ')}`) });
     }
     group.append(list);
     container.append(group);
   }
 
-  // Botons de tipus: «Totes» i un per tipus (només si n'hi ha almenys dos de diferents).
-  let activeType = null;
-  let lastQuery = '';
-  const allTypes = [...new Set(items.flatMap((it) => it.types))].sort((a, b) => a.localeCompare(b, 'ca'));
-  if (chipsEl) {
-    chipsEl.innerHTML = '';
-    chipsEl.hidden = allTypes.length < 2;
-    for (const type of [null, ...allTypes]) {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'xip';
-      btn.textContent = type ?? 'Totes';
-      btn.setAttribute('aria-pressed', String(type === activeType));
-      btn.addEventListener('click', () => {
-        activeType = type;
-        for (const b of chipsEl.children) b.setAttribute('aria-pressed', String(b === btn));
-        filter(lastQuery);
-      });
-      chipsEl.append(btn);
-    }
-  }
-
   function filter(query) {
-    lastQuery = query;
     const q = normalize(query.trim());
     const visibleGroups = new Set();
     let count = 0;
     for (const it of items) {
-      const show = (!activeType || it.types.includes(activeType))
-        && (!q || q.split(/\s+/).every((w) => it.text.includes(w)));
+      const show = !q || q.split(/\s+/).every((w) => it.text.includes(w));
       it.el.hidden = !show;
       if (show) { visibleGroups.add(it.group); count++; }
     }

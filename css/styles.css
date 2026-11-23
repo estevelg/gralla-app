@@ -190,24 +190,6 @@ a { color: var(--accent); }
 .targeta-titol { font-weight: 800; }
 .targeta-meta { color: var(--ink-soft); font-size: .82rem; }
 
-/* Filtres per tipus */
-.filtres { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
-.xip {
-  font: inherit;
-  font-size: .85rem;
-  font-weight: 700;
-  padding: 3px 12px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--surface);
-  color: var(--ink);
-  cursor: pointer;
-}
-.xip::first-letter { text-transform: uppercase; }
-.xip:hover { border-color: var(--accent); color: var(--accent); }
-.xip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
-.xip:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-
 .benvinguda {
   margin: 16px 0;
   padding: 28px 20px;

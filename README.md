@@ -1,7 +1,7 @@
 # Que sonin les gralles!
 
 Web-app per a principiants de gralla seca: tries una cançó de la llibreria i
-- la llibreria és una llista amb cercador i filtres per tipus (cercavila, pasdoble…); a l'ordinador queda en una
+- la llibreria és una llista amb cercador (també troba per tipus: cercavila, pasdoble…); a l'ordinador queda en una
   barra lateral i al mòbil és una pantalla pròpia (s'hi torna amb «← Cançons»),
 - la partitura es redueix sola a la pantalla (al mòbil hi caben 2 o 3 compassos per fila) i es pot fer més petita o
   més gran amb **A−** / **A+** (es recorda),
@@ -33,7 +33,7 @@ i obre <http://localhost:8765>.
 
 Les cançons són a `partitures/`: un fitxer `.musicxml` per veu i el catàleg `partitures/index.json`.
 
-`tipus` és opcional (un text o una llista): amb dos tipus o més a tot el catàleg, surten els botons per filtrar-hi.
+`tipus` és opcional (un text o una llista) i el troba el cercador.
 `notes` es mostra a la dreta del títol a la llista (autor, origen…).
 
 Cançó d'una sola veu:
