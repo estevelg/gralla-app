@@ -8,27 +8,27 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=a12371cc">
-  <link rel="stylesheet" href="css/print.css?v=a12371cc" media="print">
+  <link rel="stylesheet" href="css/styles.css?v=565bd7ba">
+  <link rel="stylesheet" href="css/print.css?v=565bd7ba" media="print">
   <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.5/build/cjs/vexflow.js"></script>
   <!-- importmap:inici -->
   <script type="importmap">
   {
     "imports": {
-      "./js/afinador.js": "./js/afinador.js?v=a12371cc",
-      "./js/contacte.js": "./js/contacte.js?v=a12371cc",
-      "./js/fingering-svg.js": "./js/fingering-svg.js?v=a12371cc",
-      "./js/fingerings.js": "./js/fingerings.js?v=a12371cc",
-      "./js/library.js": "./js/library.js?v=a12371cc",
-      "./js/midi-export.js": "./js/midi-export.js?v=a12371cc",
-      "./js/musicxml.js": "./js/musicxml.js?v=a12371cc",
-      "./js/player.js": "./js/player.js?v=a12371cc",
-      "./js/render.js": "./js/render.js?v=a12371cc"
+      "./js/afinador.js": "./js/afinador.js?v=565bd7ba",
+      "./js/contacte.js": "./js/contacte.js?v=565bd7ba",
+      "./js/fingering-svg.js": "./js/fingering-svg.js?v=565bd7ba",
+      "./js/fingerings.js": "./js/fingerings.js?v=565bd7ba",
+      "./js/library.js": "./js/library.js?v=565bd7ba",
+      "./js/midi-export.js": "./js/midi-export.js?v=565bd7ba",
+      "./js/musicxml.js": "./js/musicxml.js?v=565bd7ba",
+      "./js/player.js": "./js/player.js?v=565bd7ba",
+      "./js/render.js": "./js/render.js?v=565bd7ba"
     }
   }
   </script>
   <!-- importmap:fi -->
-  <script type="module" src="js/main.js?v=a12371cc"></script>
+  <script type="module" src="js/main.js?v=565bd7ba"></script>
 </head>
 <body>
   <header class="capcalera">
@@ -94,17 +94,21 @@
               <span class="etiqueta">Velocitat</span>
               <input type="range" id="tempo" min="40" max="130" step="5" value="100">
               <output id="tempo-valor">100 %</output>
+              <output id="tempo-negra" class="tempo-negra"></output>
             </label>
-            <label class="check"><input type="checkbox" id="bucle"> Repeteix</label>
-            <label class="timbre">
-              <span class="etiqueta">So</span>
-              <select id="timbre" aria-label="So">
-                <option value="shanai">Gralla</option>
-                <option value="oboe">Oboè</option>
-                <option value="recorder">Flauta</option>
-              </select>
-            </label>
-            <button type="button" class="boto-text" id="midi"><span class="etiqueta">Descarrega </span>MIDI</button>
+            <!-- Al mòbil, una fila ordenada: Repeteix, So i MIDI. -->
+            <div class="opcions-so">
+              <label class="check"><input type="checkbox" id="bucle"> Repeteix</label>
+              <label class="timbre">
+                <span class="etiqueta">So</span>
+                <select id="timbre" aria-label="So">
+                  <option value="shanai">Gralla</option>
+                  <option value="oboe">Oboè</option>
+                  <option value="recorder">Flauta</option>
+                </select>
+              </label>
+              <button type="button" class="boto-text" id="midi" title="Descarrega la cançó en MIDI">MIDI</button>
+            </div>
             <!-- Al mòbil, una fila: mida a l'esquerra, Imprimeix a la dreta. -->
             <div class="mida-imprimeix">
               <div class="mida" role="group" aria-label="Mida de la partitura">

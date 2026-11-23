@@ -22,6 +22,7 @@ const els = {
   atura: $('#atura'),
   tempo: $('#tempo'),
   tempoValor: $('#tempo-valor'),
+  tempoNegra: $('#tempo-negra'),
   bucle: $('#bucle'),
   timbre: $('#timbre'),
   midi: $('#midi'),
@@ -61,14 +62,14 @@ const player = new Player({
     els.play.classList.toggle('sonant', state === 'playing');
     els.play.setAttribute('aria-label', state === 'playing' ? 'Pausa' : 'Reprodueix');
   },
-  onStatus: (text) => { els.estat.textContent = text || tempoText(); },
+  onStatus: (text) => { els.estat.textContent = text || ''; }, // sota el títol, només avisos (càrrega del so)
 });
 
 const baseTempo = () => shown[0].score.tempo;
 
-function tempoText() {
-  if (!shown.length) return '';
-  return `♩ = ${Math.round(baseTempo() * player.tempoFactor)}`;
+// Velocitat de la negra, al costat del control de velocitat (♩ una mica més gran perquè es llegeixi bé).
+function showTempo() {
+  els.tempoNegra.innerHTML = shown.length ? `<span class="negra">♩</span> = ${Math.round(baseTempo() * player.tempoFactor)}` : '';
 }
 
 // ---------- Càrrega ----------
@@ -311,7 +312,7 @@ function applyTransposition(semitones) {
   shown = voices.map(({ nom, score }) => ({ nom, score: transposeScore(score, semitones) }));
   player.setScore(shown.map((v) => v.score), SO_REAL);
   els.titol.textContent = piece.title || 'Partitura';
-  els.estat.textContent = tempoText();
+  showTempo();
   draw();
   checkRange();
 }
@@ -421,7 +422,7 @@ function followRow(row) {
   if (player.state !== 'playing' || !row || row === followedRow) return;
   followedRow = row;
   const barBottom = document.getElementById('reproductor').getBoundingClientRect().bottom;
-  const top = barBottom + 8;                 // límit superior de la zona visible (sota la barra fixa)
+  const top = barBottom + 12;                // límit superior de la zona visible (sota la barra fixa)
   const bottom = window.innerHeight - 8;     // límit inferior
   const cur = row.getBoundingClientRect();
   const nextEl = row.nextElementSibling;
@@ -473,7 +474,7 @@ els.tempo.addEventListener('input', () => {
   const pct = Number(els.tempo.value);
   els.tempoValor.textContent = `${pct} %`;
   player.setTempoFactor(pct / 100);
-  els.estat.textContent = tempoText();
+  showTempo();
 });
 els.bucle.addEventListener('change', () => { player.loop = els.bucle.checked; });
 els.timbre.addEventListener('change', () => player.setInstrument(els.timbre.value));
@@ -514,12 +515,13 @@ window.addEventListener('resize', () => {
 
 // ---------- Barra del reproductor al mòbil ----------
 
-// En vertical, la barra es veu sencera a dalt de la cançó i es plega en baixar (queden els botons, el títol i
-// les veus); «Opcions» la desplega. Amb histèresi: es plega a 150 px i només es desplega en tornar a dalt de tot,
-// perquè en canviar d'alçada la pàgina es mou i, si no, podria anar alternant.
+// En vertical, la barra es veu sencera a dalt de la cançó i es plega tan bon punt queda enganxada a dalt de la
+// pantalla en baixar (queden els botons, el títol i les veus); «Opcions» la desplega. Es torna a desplegar sola
+// en pujar fins que torna a veure's una mica de la capçalera (histèresi, perquè no vagi alternant).
 // En apaisat no es plega mai: «Opcions» obre i tanca un panell flotant.
-const FOLD_AT = 150;
-const UNFOLD_AT = 20;
+const FOLD_AT = 2;       // px per sota d'on la barra queda enganxada a dalt
+const UNFOLD_AT = -24;   // px per sobre (es torna a veure una mica de la capçalera)
+const REFOLD_AFTER = 150; // desplegada amb el botó: es torna a plegar en baixar aquests px
 let openedAt = 0; // posició de l'scroll quan s'ha desplegat amb el botó
 
 function setBar(folded, open) {
@@ -537,9 +539,9 @@ function onScrollBar() {
   const open = els.reproductor.classList.contains('obert');
   if (!folded) {
     if (y > start + FOLD_AT) setBar(true, false);
-  } else if (y < start + UNFOLD_AT) {
+  } else if (y < Math.max(0, start + UNFOLD_AT) || y <= 0) {
     resetBar();
-  } else if (open && y > openedAt + FOLD_AT) {
+  } else if (open && y > openedAt + REFOLD_AFTER) {
     setBar(true, false); // desplegada amb el botó i s'ha continuat baixant
   }
 }
