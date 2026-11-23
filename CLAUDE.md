@@ -4,6 +4,8 @@ Web-app estàtica (HTML + CSS + JS en mòduls, sense build) per aprendre gralla 
 MusicXML, reproducció, i el nom i la digitació sota cada nota. El README explica el funcionament i l'estructura;
 `docs/pla-ampliacio.md` és el pla si s'hi afegeixen colles i molt més repertori (fase 1 feta; fases 2-3 pendents).
 
+**Abans de començar, llegeix `docs/handoff.md`** (estat actual, repertori, coses pendents de revisar).
+
 ## Com treballem
 
 - **Idioma:** tot en català: la web, els textos, els comentaris del codi i els missatges de commit.
