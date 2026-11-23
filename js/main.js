@@ -40,10 +40,14 @@ const els = {
   midaMes: $('#mida-mes'),
   mesBoto: $('#mes-boto'),
   mesOpcions: $('#mes-opcions'),
+  reproductor: $('#reproductor'),
 };
 
-// Pantalles estretes (mòbil i tauleta vertical): la llibreria i la cançó són dues vistes separades.
-const narrow = window.matchMedia('(max-width: 899px)');
+// Pantalles estretes o baixes (mòbil, tauleta vertical, mòbil apaisat): la llibreria i la cançó són dues
+// vistes separades. Han de coincidir amb les consultes de css/styles.css.
+const narrow = window.matchMedia('(max-width: 899px), (max-height: 500px)');
+// Mòbil apaisat: barra d'una fila i opcions en un panell flotant.
+const landscape = window.matchMedia('(orientation: landscape) and (max-height: 500px)');
 
 let piece = null;      // cançó tal com s'ha llegit: { title, voices: [{ nom, score }] }
 let selection = 0;     // veu que es mostra: índex de veu o 'totes'
@@ -154,6 +158,7 @@ function setPiece(p, voice = 0, { scroll = true } = {}) {
   els.transposa.value = 0;
   els.obra.hidden = false;
   document.body.classList.add('amb-obra');
+  resetBar();
   buildVoiceSelector();
   applyTransposition(0);
   if (narrow.matches) window.scrollTo({ top: 0 }); // vista pròpia: es comença per dalt
@@ -165,6 +170,7 @@ function showLibrary() {
   if (!document.body.classList.contains('amb-obra')) return;
   player.pause();
   document.body.classList.remove('amb-obra');
+  resetBar();
   if (narrow.matches) window.scrollTo({ top: 0 });
 }
 
@@ -322,6 +328,7 @@ let savedZoom = null;
 try { savedZoom = Number(localStorage.getItem(ZOOM_KEY)) || null; } catch { /* sense emmagatzematge */ }
 
 function defaultZoom() {
+  if (landscape.matches) return 0.62; // poca alçada: que hi càpiga una fila sencera amb digitació
   const w = window.innerWidth;
   return w >= 900 ? 1 : w >= 600 ? 0.8 : 0.62;
 }
@@ -506,12 +513,62 @@ window.addEventListener('resize', () => {
   }, 150);
 });
 
-// Al mòbil, So / MIDI / Imprimeix van dins el menú «⋯» (a l'ordinador sempre es veuen).
-els.mesBoto.addEventListener('click', () => {
-  const open = !els.mesOpcions.classList.contains('obert');
-  els.mesOpcions.classList.toggle('obert', open);
+// ---------- Barra del reproductor al mòbil ----------
+
+// En vertical, la barra es veu sencera a dalt de la cançó i es plega en baixar (queden els botons, el títol i
+// les veus); «Opcions» la desplega. Amb histèresi: es plega a 150 px i només es desplega en tornar a dalt de tot,
+// perquè en canviar d'alçada la pàgina es mou i, si no, podria anar alternant.
+// En apaisat no es plega mai: «Opcions» obre i tanca un panell flotant.
+const FOLD_AT = 150;
+const UNFOLD_AT = 20;
+let openedAt = 0; // posició de l'scroll quan s'ha desplegat amb el botó
+
+function setBar(folded, open) {
+  els.reproductor.classList.toggle('plegat', folded);
+  els.reproductor.classList.toggle('obert', open);
   els.mesBoto.setAttribute('aria-expanded', String(open));
+}
+function resetBar() { setBar(false, false); }
+
+function onScrollBar() {
+  if (!narrow.matches || landscape.matches || !document.body.classList.contains('amb-obra')) return;
+  const start = els.obra.getBoundingClientRect().top + window.scrollY; // on comença la cançó a la pàgina
+  const y = window.scrollY;
+  const folded = els.reproductor.classList.contains('plegat');
+  const open = els.reproductor.classList.contains('obert');
+  if (!folded) {
+    if (y > start + FOLD_AT) setBar(true, false);
+  } else if (y < start + UNFOLD_AT) {
+    resetBar();
+  } else if (open && y > openedAt + FOLD_AT) {
+    setBar(true, false); // desplegada amb el botó i s'ha continuat baixant
+  }
+}
+let scrollQueued = false;
+window.addEventListener('scroll', () => {
+  if (scrollQueued) return;
+  scrollQueued = true;
+  requestAnimationFrame(() => { scrollQueued = false; onScrollBar(); });
+}, { passive: true });
+
+els.mesBoto.addEventListener('click', () => {
+  const open = !els.reproductor.classList.contains('obert');
+  openedAt = window.scrollY;
+  setBar(els.reproductor.classList.contains('plegat'), open);
 });
+// En apaisat, el panell es tanca tocant fora de la barra.
+document.addEventListener('click', (e) => {
+  if (landscape.matches && els.reproductor.classList.contains('obert') && !els.reproductor.contains(e.target)) {
+    setBar(false, false);
+  }
+});
+// En girar el mòbil o canviar de disposició: barra desplegada i partitura redibuixada (canvia el zoom per defecte).
+for (const mq of [narrow, landscape]) {
+  mq.addEventListener('change', () => {
+    resetBar();
+    draw();
+  });
+}
 
 // La llegenda de la digitació, oberta a l'ordinador i plegada al mòbil (on l'espai és més valuós).
 els.llegenda.open = !narrow.matches;

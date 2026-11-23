@@ -332,10 +332,13 @@ details summary { cursor: pointer; font-weight: 700; }
 .mida button:hover:not(:disabled) { color: var(--accent); }
 .mida button:disabled { opacity: .35; cursor: default; }
 
-/* So, MIDI i Imprimeix: a l'ordinador en línia amb la resta; al mòbil, dins el menú «⋯». */
-.mes-boto { display: none; font-size: 1.2rem; font-weight: 800; line-height: 1; }
+/* Opcions de la barra: a l'ordinador, en línia amb la resta. Al mòbil es pleguen en baixar per la cançó
+   i el botó «Opcions» les torna a mostrar (js/main.js). */
+.mes-boto { display: none; align-items: center; gap: 2px; flex: none; }
+.mes-boto svg { width: 18px; height: 18px; transition: transform .15s; }
 .mes-boto[aria-expanded="true"] { border-color: var(--accent); color: var(--accent); }
-.mes-opcions { display: contents; }
+.mes-boto[aria-expanded="true"] svg { transform: rotate(180deg); }
+.mes-opcions, .mida-imprimeix { display: contents; }
 
 .veus {
   display: inline-flex;
@@ -671,18 +674,8 @@ input[type="number"] { width: 4.5em; }
 @media (max-width: 560px) {
   .reproductor { padding: 10px; gap: 8px; }
   .reproductor-fila { gap: 10px; }
-  .boto-play { width: 48px; height: 48px; }
-  .boto { width: 38px; height: 38px; }
-  .titol-obra h2 {
-    font-size: 1rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
   .controls { gap: 8px 12px; font-size: .88rem; }
   .timbre .etiqueta, #midi .etiqueta { display: none; }
-  .veus { flex: 1 1 100%; }
-  .veus button { flex: 1; padding: 4px 6px; }
   .vista { flex: 1 1 100%; flex-wrap: wrap; justify-content: space-between; }
   .opcio { flex: 1 1 auto; }
   .opcio span { flex: 1; justify-content: center; padding: 4px 6px; }
@@ -692,7 +685,7 @@ input[type="number"] { width: 4.5em; }
 }
 
 /* ---------- Disposició: barra lateral (ordinador) o dues vistes (mòbil) ---------- */
-@media (min-width: 900px) {
+@media (min-width: 900px) and (min-height: 501px) {
   .amplada { max-width: 1440px; }
   main.amplada {
     display: grid;
@@ -717,18 +710,66 @@ input[type="number"] { width: 4.5em; }
   main.amplada > .benvinguda, main.amplada > .error { margin-top: 0; }
 }
 
-@media (max-width: 899px) {
+/* Mòbil i tauleta vertical, i també qualsevol pantalla molt baixa (mòbil apaisat). */
+@media (max-width: 899px), (max-height: 500px) {
   /* Amb una cançó oberta, només es veu la cançó (la llista torna amb «← Cançons»). */
   body.amb-obra .llibreria { display: none; }
   body.amb-obra .capcalera p { display: none; }
   body.amb-obra .capcalera { padding-bottom: 4px; }
   .benvinguda { display: none; }
   .torna { display: inline-flex; }
-  .mes-opcions { display: none; }
-  .mes-opcions.obert { display: flex; flex: 1 1 100%; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
-  .mes-boto { display: grid; }
-  /* Barra fixa més baixa: sense veus (cançó d'una veu) i amb el menú tancat, només la primera fila. */
-  .controls:not(:has(.veus:not([hidden]), .mes-opcions.obert)) { display: none; }
+
+  /* Barra: botons a dalt (play i stop iguals), títol a sota amb tota l'amplada, veus baixes i la resta d'opcions. */
+  .reproductor { padding: 10px; gap: 8px; }
+  .reproductor-fila { gap: 8px 10px; }
+  .boto-play, .boto { width: 42px; height: 42px; }
+  .boto-play svg { width: 22px; height: 22px; }
+  .boto svg { width: 16px; height: 16px; }
+  .titol-obra { order: 10; flex: 1 1 100%; }
+  .titol-obra h2 { font-size: 1.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .veus { flex: 1 1 100%; padding: 2px; }
+  .veus button { flex: 1; padding: 2px 8px; font-size: .85rem; }
+  .mes-opcions { display: flex; flex: 1 1 100%; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+  .mida-imprimeix { display: flex; flex: 1 1 100%; align-items: center; justify-content: space-between; }
+  .mes-boto { margin-left: auto; }
+
+  /* Plegada en baixar: només botons, títol i veus; «Opcions» la torna a desplegar. Sense «ancoratge» de
+     l'scroll: si no, en canviar l'alçada de la barra el navegador mou la pàgina i es plegaria i desplegaria sola. */
+  html:has(body.amb-obra) { overflow-anchor: none; }
+  .reproductor.plegat .mes-boto { display: inline-flex; }
+  .reproductor.plegat .estat { display: none; }
+  .reproductor.plegat:not(.obert) .mes-opcions { display: none; }
+  .reproductor.plegat:not(.obert) .controls:not(:has(.veus:not([hidden]))) { display: none; }
+}
+
+/* Mòbil apaisat: hi ha poca alçada. Sense la capçalera de la web, la barra en una sola fila i les opcions
+   en un panell que s'obre damunt de la partitura (sense empènyer-la). */
+@media (orientation: landscape) and (max-height: 500px) {
+  body.amb-obra .capcalera { display: none; }
+  body.amb-obra main.amplada { padding-top: 6px; }
+  .reproductor { flex-direction: row; align-items: center; gap: 8px; padding: 6px 10px; }
+  .reproductor-fila { display: contents; }
+  .torna { order: 1; }
+  #play { order: 2; }
+  #atura { order: 3; }
+  .titol-obra { order: 4; flex: 1 1 auto; min-width: 0; }
+  .titol-obra h2 { font-size: 1rem; }
+  .estat { font-size: .8rem; }
+  .veus { order: 5; flex: 0 0 auto; }
+  .reproductor .mes-boto { order: 6; display: inline-flex; margin-left: 0; }
+  .mes-opcions {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    width: min(560px, 100%);
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: 0 10px 28px -12px rgba(0, 0, 0, .45);
+  }
+  .reproductor.obert .mes-opcions { display: flex; }
 }
 
 /* ---------- Afinador ---------- */

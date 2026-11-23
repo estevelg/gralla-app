@@ -8,27 +8,27 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=e430e5e7">
-  <link rel="stylesheet" href="css/print.css?v=e430e5e7" media="print">
+  <link rel="stylesheet" href="css/styles.css?v=fe3d0929">
+  <link rel="stylesheet" href="css/print.css?v=fe3d0929" media="print">
   <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.5/build/cjs/vexflow.js"></script>
   <!-- importmap:inici -->
   <script type="importmap">
   {
     "imports": {
-      "./js/afinador.js": "./js/afinador.js?v=e430e5e7",
-      "./js/contacte.js": "./js/contacte.js?v=e430e5e7",
-      "./js/fingering-svg.js": "./js/fingering-svg.js?v=e430e5e7",
-      "./js/fingerings.js": "./js/fingerings.js?v=e430e5e7",
-      "./js/library.js": "./js/library.js?v=e430e5e7",
-      "./js/midi-export.js": "./js/midi-export.js?v=e430e5e7",
-      "./js/musicxml.js": "./js/musicxml.js?v=e430e5e7",
-      "./js/player.js": "./js/player.js?v=e430e5e7",
-      "./js/render.js": "./js/render.js?v=e430e5e7"
+      "./js/afinador.js": "./js/afinador.js?v=fe3d0929",
+      "./js/contacte.js": "./js/contacte.js?v=fe3d0929",
+      "./js/fingering-svg.js": "./js/fingering-svg.js?v=fe3d0929",
+      "./js/fingerings.js": "./js/fingerings.js?v=fe3d0929",
+      "./js/library.js": "./js/library.js?v=fe3d0929",
+      "./js/midi-export.js": "./js/midi-export.js?v=fe3d0929",
+      "./js/musicxml.js": "./js/musicxml.js?v=fe3d0929",
+      "./js/player.js": "./js/player.js?v=fe3d0929",
+      "./js/render.js": "./js/render.js?v=fe3d0929"
     }
   }
   </script>
   <!-- importmap:fi -->
-  <script type="module" src="js/main.js?v=e430e5e7"></script>
+  <script type="module" src="js/main.js?v=fe3d0929"></script>
 </head>
 <body>
   <header class="capcalera">
@@ -77,20 +77,19 @@
             <h2 id="titol"></h2>
             <span class="estat" id="estat" aria-live="polite"></span>
           </div>
-          <button type="button" class="boto mes-boto" id="mes-boto" aria-expanded="false" aria-controls="mes-opcions" aria-label="Més opcions" title="Més opcions">⋯</button>
+          <button type="button" class="boto-text mes-boto" id="mes-boto" aria-expanded="false" aria-controls="mes-opcions">
+            <span>Opcions</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
         </div>
         <div class="reproductor-fila controls">
           <div class="veus" id="veus" role="radiogroup" aria-label="Veu" hidden></div>
-          <!-- A l'ordinador, en línia amb la resta; al mòbil, dins el menú «⋯» (css/styles.css). -->
+          <!-- Al mòbil s'amaguen quan la barra es plega en baixar (botó «Opcions» per tornar-les a veure). -->
           <div class="mes-opcions" id="mes-opcions">
             <div class="vista" id="vista" role="group" aria-label="Mostra">
               <label class="opcio"><input type="checkbox" data-vista="pentagrama" checked><span>Pentagrama</span></label>
               <label class="opcio"><input type="checkbox" data-vista="noms" checked><span>Notes</span></label>
               <label class="opcio"><input type="checkbox" data-vista="digitacio" checked><span>Digitació</span></label>
-            </div>
-            <div class="mida" role="group" aria-label="Mida de la partitura">
-              <button type="button" id="mida-menys" aria-label="Partitura més petita" title="Partitura més petita">A−</button>
-              <button type="button" id="mida-mes" aria-label="Partitura més gran" title="Partitura més gran">A+</button>
             </div>
             <label class="tempo">
               <span class="etiqueta">Velocitat</span>
@@ -107,7 +106,14 @@
               </select>
             </label>
             <button type="button" class="boto-text" id="midi"><span class="etiqueta">Descarrega </span>MIDI</button>
-            <button type="button" class="boto-text" id="imprimeix" title="Imprimeix la vista actual en A5 apaisat (per al faristol)">Imprimeix</button>
+            <!-- Al mòbil, una fila: mida a l'esquerra, Imprimeix a la dreta. -->
+            <div class="mida-imprimeix">
+              <div class="mida" role="group" aria-label="Mida de la partitura">
+                <button type="button" id="mida-menys" aria-label="Partitura més petita" title="Partitura més petita">A−</button>
+                <button type="button" id="mida-mes" aria-label="Partitura més gran" title="Partitura més gran">A+</button>
+              </div>
+              <button type="button" class="boto-text" id="imprimeix" title="Imprimeix la vista actual en A5 apaisat (per al faristol)">Imprimeix</button>
+            </div>
           </div>
         </div>
       </div>

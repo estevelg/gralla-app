@@ -5,6 +5,8 @@ Web-app per a principiants de gralla seca: tries una cançó de la llibreria i
   barra lateral i al mòbil és una pantalla pròpia (s'hi torna amb «← Cançons»),
 - la partitura es redueix sola a la pantalla (al mòbil hi caben 2 o 3 compassos per fila) i es pot fer més petita o
   més gran amb **A−** / **A+** (es recorda),
+- al mòbil la barra del reproductor es veu sencera a dalt i es plega en baixar (queden play, stop, títol i veus;
+  «Opcions» la torna a obrir); en apaisat és d'una sola fila i les opcions s'obren en un panell flotant,
 - la pots escoltar (so de xeremia/shanai, oboè o flauta; velocitat ajustable, repetició),
 - veus el pentagrama original i, sota cada nota, el **nom** i el **dibuix de la digitació**,
 - la nota que sona es ressalta i la vista la segueix amb antelació (sempre es veu la fila següent, per llegir endavant),
