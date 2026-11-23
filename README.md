@@ -40,7 +40,7 @@ Cançó d'una sola veu:
 
 ```json
 { "id": "hereu-riera", "titol": "L'hereu Riera", "fitxer": "hereu-riera.musicxml",
-  "categoria": "Repertori", "tipus": "cercavila", "notes": "Tradicional" }
+  "categoria": "Repertori", "notes": "Tradicional" }
 ```
 
 Cançó amb diverses veus (a la web es tria 1a gralla, 2a gralla o totes alhora). Totes les veus
@@ -49,7 +49,7 @@ com `#/polca-dours-2a-gralla` obri la cançó amb aquesta veu. El `fitxer` de fo
 un navegador que encara tingui el JavaScript antic a la memòria cau pugui obrir la cançó igualment.
 
 ```json
-{ "id": "gener", "titol": "Gener", "categoria": "Repertori", "notes": "Pasdoble",
+{ "id": "gener", "titol": "Gener", "categoria": "Repertori", "tipus": "pasdoble", "notes": "Pasdoble",
   "fitxer": "gener.musicxml",
   "veus": [
     { "nom": "1a gralla", "fitxer": "gener.musicxml" },
