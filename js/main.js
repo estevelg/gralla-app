@@ -29,13 +29,23 @@ const els = {
   midi: $('#midi'),
   avis: $('#avis'),
   partitura: $('#partitura'),
+  dins: $('#partitura-dins'),
   taula: $('#taula-graella'),
   transposa: $('#transposa'),
   veus: $('#veus'),
   vista: $('#vista'),
   imprimeix: $('#imprimeix'),
   impressio: $('#impressio'),
+  filtres: $('#filtres'),
+  llegenda: $('#llegenda'),
+  midaMenys: $('#mida-menys'),
+  midaMes: $('#mida-mes'),
+  mesBoto: $('#mes-boto'),
+  mesOpcions: $('#mes-opcions'),
 };
+
+// Pantalles estretes (mòbil i tauleta vertical): la llibreria i la cançó són dues vistes separades.
+const narrow = window.matchMedia('(max-width: 899px)');
 
 let piece = null;      // cançó tal com s'ha llegit: { title, voices: [{ nom, score }] }
 let selection = 0;     // veu que es mostra: índex de veu o 'totes'
@@ -134,7 +144,7 @@ function parseHash() {
 
 function openFromHash({ scroll = true } = {}) {
   const target = parseHash();
-  if (!target) return;
+  if (!target) { showLibrary(); return; }
   if (target.entry === currentEntry && piece) {
     selectVoice(target.voice);
   } else {
@@ -145,7 +155,7 @@ function openFromHash({ scroll = true } = {}) {
 async function initLibrary() {
   try {
     catalog = await loadCatalog();
-    const filter = renderCatalog(els.llista, els.llistaBuida, catalog, (entry) => loadFromLibrary(entry));
+    const filter = renderCatalog(els.llista, els.llistaBuida, catalog, (entry) => loadFromLibrary(entry), els.filtres);
     els.cerca.addEventListener('input', () => filter(els.cerca.value));
     openFromHash();
   } catch (err) {
@@ -159,9 +169,19 @@ function setPiece(p, voice = 0, { scroll = true } = {}) {
   selection = voice;
   els.transposa.value = 0;
   els.obra.hidden = false;
+  document.body.classList.add('amb-obra');
   buildVoiceSelector();
   applyTransposition(0);
-  if (scroll) els.obra.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (narrow.matches) window.scrollTo({ top: 0 }); // vista pròpia: es comença per dalt
+  else if (scroll) els.obra.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Torna a la llista (al mòbil, amb «← Cançons»). A l'ordinador la llista sempre es veu al costat.
+function showLibrary() {
+  if (!document.body.classList.contains('amb-obra')) return;
+  player.pause();
+  document.body.classList.remove('amb-obra');
+  if (narrow.matches) window.scrollTo({ top: 0 });
 }
 
 // Selector de veu: 1a gralla, 2a gralla o totes alhora.
@@ -307,10 +327,45 @@ function applyTransposition(semitones) {
   checkRange();
 }
 
+// ---------- Mida de la partitura ----------
+
+// La partitura es dibuixa més ampla del que és la pantalla i es redueix amb el zoom de CSS: el pentagrama,
+// els noms i les digitacions s'encongeixen alhora i caben més compassos a cada fila (al mòbil, 2 o 3).
+// Si es tria una mida amb A− / A+, es recorda entre visites.
+const ZOOM_KEY = 'gralla-mida';
+const ZOOMS = [0.45, 0.5, 0.56, 0.62, 0.7, 0.8, 0.9, 1, 1.15, 1.3];
+let savedZoom = null;
+try { savedZoom = Number(localStorage.getItem(ZOOM_KEY)) || null; } catch { /* sense emmagatzematge */ }
+
+function defaultZoom() {
+  const w = window.innerWidth;
+  return w >= 900 ? 1 : w >= 600 ? 0.8 : 0.62;
+}
+const currentZoom = () => savedZoom ?? defaultZoom();
+
+function changeZoom(step) {
+  const z = currentZoom();
+  let i = ZOOMS.findIndex((v) => v >= z - 1e-6);
+  if (i < 0) i = ZOOMS.length - 1;
+  else if (ZOOMS[i] > z + 1e-6 && step > 0) i--; // mida entre dos passos: el pas següent és el de dalt
+  const next = ZOOMS[Math.max(0, Math.min(ZOOMS.length - 1, i + step))];
+  if (next === z) return;
+  savedZoom = next;
+  try { localStorage.setItem(ZOOM_KEY, String(next)); } catch { /* no es pot desar */ }
+  draw();
+}
+els.midaMenys.addEventListener('click', () => changeZoom(-1));
+els.midaMes.addEventListener('click', () => changeZoom(1));
+
 function draw() {
   if (!shown.length) return;
   active = [];
-  index = renderScore(els.partitura, shown, { onNoteClick });
+  const zoom = currentZoom();
+  els.dins.style.zoom = zoom;
+  const width = Math.max(300, Math.floor(els.partitura.clientWidth / zoom));
+  index = renderScore(els.dins, shown, { onNoteClick, width });
+  els.midaMenys.disabled = zoom <= ZOOMS[0];
+  els.midaMes.disabled = zoom >= ZOOMS[ZOOMS.length - 1];
   if (player.currentMarks.length) highlight(player.currentMarks);
 }
 
@@ -483,6 +538,16 @@ window.addEventListener('resize', () => {
     }
   }, 150);
 });
+
+// Al mòbil, So / MIDI / Imprimeix van dins el menú «⋯» (a l'ordinador sempre es veuen).
+els.mesBoto.addEventListener('click', () => {
+  const open = !els.mesOpcions.classList.contains('obert');
+  els.mesOpcions.classList.toggle('obert', open);
+  els.mesBoto.setAttribute('aria-expanded', String(open));
+});
+
+// La llegenda de la digitació, oberta a l'ordinador i plegada al mòbil (on l'espai és més valuós).
+els.llegenda.open = !narrow.matches;
 
 loadView();
 applyView();

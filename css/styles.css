@@ -143,15 +143,18 @@ a { color: var(--accent); }
   text-transform: uppercase;
 }
 .targetes {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 10px;
-}
-.targeta {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 12px 14px;
+  gap: 6px;
+}
+/* Una línia per cançó: títol a l'esquerra i, a la dreta, tipus/autor i nombre de veus. */
+.targeta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 2px 10px;
+  padding: 9px 12px;
   border: 1px solid var(--line);
   border-radius: 12px;
   background: var(--surface);
@@ -167,7 +170,36 @@ a { color: var(--accent); }
   box-shadow: inset 4px 0 0 var(--accent);
 }
 .targeta-titol { font-weight: 800; }
-.targeta-meta { color: var(--ink-soft); font-size: .88rem; }
+.targeta-meta { color: var(--ink-soft); font-size: .82rem; }
+
+/* Filtres per tipus */
+.filtres { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+.xip {
+  font: inherit;
+  font-size: .85rem;
+  font-weight: 700;
+  padding: 3px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+.xip::first-letter { text-transform: uppercase; }
+.xip:hover { border-color: var(--accent); color: var(--accent); }
+.xip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.xip:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.benvinguda {
+  margin: 16px 0;
+  padding: 28px 20px;
+  border: 2px dashed var(--line);
+  border-radius: var(--radius);
+  color: var(--ink-soft);
+  text-align: center;
+}
+body.amb-obra .benvinguda { display: none; }
+body:not(.amb-obra) #obra { display: none; }
 .buit { color: var(--ink-soft); }
 
 .propia { margin-top: 18px; color: var(--ink-soft); }
@@ -267,6 +299,47 @@ details summary { cursor: pointer; font-weight: 700; }
 
 .controls { gap: 10px 18px; font-size: .95rem; }
 .tempo, .timbre, .check { display: flex; align-items: center; gap: 8px; }
+/* Botó «← Cançons»: només a les pantalles estretes, on la llista és una vista a part. */
+.torna {
+  display: none;
+  align-items: center;
+  gap: 2px;
+  flex: none;
+  padding: 6px 10px 6px 4px;
+  border-radius: 999px;
+  color: var(--ink);
+  font-weight: 800;
+  text-decoration: none;
+}
+.torna svg { width: 22px; height: 22px; }
+.torna:hover { color: var(--accent); }
+
+/* Mida de la partitura (A− / A+) */
+.mida {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  overflow: hidden;
+}
+.mida button {
+  font: inherit;
+  font-weight: 800;
+  padding: 4px 12px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+.mida button + button { border-left: 1px solid var(--line); }
+.mida button:hover:not(:disabled) { color: var(--accent); }
+.mida button:disabled { opacity: .35; cursor: default; }
+
+/* So, MIDI i Imprimeix: a l'ordinador en línia amb la resta; al mòbil, dins el menú «⋯». */
+.mes-boto { display: none; font-size: 1.2rem; font-weight: 800; line-height: 1; }
+.mes-boto[aria-expanded="true"] { border-color: var(--accent); color: var(--accent); }
+.mes-opcions { display: contents; }
+
 .veus {
   display: inline-flex;
   padding: 3px;
@@ -365,7 +438,11 @@ input[type="number"] { width: 4.5em; }
 }
 .avis button { margin-left: 8px; }
 
-/* Llegenda */
+/* Llegenda (desplegable: oberta a l'ordinador, plegada al mòbil) */
+.llegenda-caixa { margin: 14px 0 6px; color: var(--ink-soft); font-size: .88rem; }
+.llegenda-caixa summary { color: var(--ink); font-weight: 700; font-size: .92rem; }
+.llegenda-caixa .llegenda { margin: 8px 0 0; }
+.obra.sense-digitacio .llegenda-caixa { display: none; }
 .llegenda {
   display: flex;
   flex-wrap: wrap;
@@ -615,6 +692,46 @@ input[type="number"] { width: 4.5em; }
   .tempo { flex: 1 1 100%; }
   .tempo input { flex: 1; width: auto; }
   select, .boto-text { padding: 4px 8px; }
+}
+
+/* ---------- Disposició: barra lateral (ordinador) o dues vistes (mòbil) ---------- */
+@media (min-width: 900px) {
+  .amplada { max-width: 1440px; }
+  main.amplada {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    column-gap: 28px;
+    align-items: start;
+  }
+  main.amplada > * { grid-column: 2; }
+  /* La llibreria ocupa la columna de l'esquerra, fixa mentre es baixa per la partitura, amb scroll propi. */
+  main.amplada > .llibreria {
+    grid-column: 1;
+    grid-row: 1 / span 20;
+    position: sticky;
+    top: 12px;
+    max-height: calc(100vh - 24px);
+    overflow-y: auto;
+    margin: 0;
+    padding: 4px 4px 12px 0;
+  }
+  .llibreria-cap { flex-direction: column; align-items: stretch; }
+  #cerca { flex: none; }
+  main.amplada > .benvinguda, main.amplada > .error { margin-top: 0; }
+}
+
+@media (max-width: 899px) {
+  /* Amb una cançó oberta, només es veu la cançó (la llista torna amb «← Cançons»). */
+  body.amb-obra .llibreria { display: none; }
+  body.amb-obra .capcalera p { display: none; }
+  body.amb-obra .capcalera { padding-bottom: 4px; }
+  .benvinguda { display: none; }
+  .torna { display: inline-flex; }
+  .mes-opcions { display: none; }
+  .mes-opcions.obert { display: flex; flex: 1 1 100%; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+  .mes-boto { display: grid; }
+  /* Barra fixa més baixa: sense veus (cançó d'una veu) i amb el menú tancat, només la primera fila. */
+  .controls:not(:has(.veus:not([hidden]), .mes-opcions.obert)) { display: none; }
 }
 
 /* ---------- Afinador ---------- */

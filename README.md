@@ -1,6 +1,10 @@
 # Que sonin les gralles!
 
 Web-app per a principiants de gralla seca: tries una cançó de la llibreria (o carregues un MusicXML propi) i
+- la llibreria és una llista amb cercador i filtres per tipus (cercavila, pasdoble…); a l'ordinador queda en una
+  barra lateral i al mòbil és una pantalla pròpia (s'hi torna amb «← Cançons»),
+- la partitura es redueix sola a la pantalla (al mòbil hi caben 2 o 3 compassos per fila) i es pot fer més petita o
+  més gran amb **A−** / **A+** (es recorda),
 - la pots escoltar (so de xeremia/shanai, oboè o flauta; velocitat ajustable, repetició),
 - veus el pentagrama original i, sota cada nota, el **nom** i el **dibuix de la digitació**,
 - la nota que sona es ressalta i la vista la segueix amb antelació (sempre es veu la fila següent, per llegir endavant),
@@ -27,11 +31,14 @@ i obre <http://localhost:8765>.
 
 Les cançons són a `partitures/`: un fitxer `.musicxml` per veu i el catàleg `partitures/index.json`.
 
+`tipus` és opcional (un text o una llista): amb dos tipus o més a tot el catàleg, surten els botons per filtrar-hi.
+`notes` es mostra a la dreta del títol a la llista (autor, origen…).
+
 Cançó d'una sola veu:
 
 ```json
 { "id": "hereu-riera", "titol": "L'hereu Riera", "fitxer": "hereu-riera.musicxml",
-  "categoria": "Repertori", "notes": "Tradicional" }
+  "categoria": "Repertori", "tipus": "cercavila", "notes": "Tradicional" }
 ```
 
 Cançó amb diverses veus (a la web es tria 1a gralla, 2a gralla o totes alhora). Totes les veus
@@ -101,6 +108,7 @@ límit de 3 missatges/hora i 5/dia per IP i de 20 al dia en total, i neteja de c
 | `js/contacte.js`, `contacte.php` | Formulari de contacte (JS al navegador, PHP al servidor) |
 | `js/library.js` | Llista de cançons, cercador i enllaços directes |
 | `css/print.css` | Estils d'impressió (A5 apaisat, sempre en clar); la còpia per a paper es dibuixa a `preparePrint()` de `js/main.js` |
+| `docs/pla-ampliacio.md` | Pla per si s'hi afegeixen més colles i molt més repertori (fases 1-3) |
 | `partitures/` | Llibreria de partitures i catàleg `index.json` |
 
 Llibreries (per CDN): VexFlow 4, JSZip, smplr.

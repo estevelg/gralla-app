@@ -8,28 +8,28 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=ac1dea62">
-  <link rel="stylesheet" href="css/print.css?v=ac1dea62" media="print">
+  <link rel="stylesheet" href="css/styles.css?v=c86744ca">
+  <link rel="stylesheet" href="css/print.css?v=c86744ca" media="print">
   <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.5/build/cjs/vexflow.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
   <!-- importmap:inici -->
   <script type="importmap">
   {
     "imports": {
-      "./js/afinador.js": "./js/afinador.js?v=ac1dea62",
-      "./js/contacte.js": "./js/contacte.js?v=ac1dea62",
-      "./js/fingering-svg.js": "./js/fingering-svg.js?v=ac1dea62",
-      "./js/fingerings.js": "./js/fingerings.js?v=ac1dea62",
-      "./js/library.js": "./js/library.js?v=ac1dea62",
-      "./js/midi-export.js": "./js/midi-export.js?v=ac1dea62",
-      "./js/musicxml.js": "./js/musicxml.js?v=ac1dea62",
-      "./js/player.js": "./js/player.js?v=ac1dea62",
-      "./js/render.js": "./js/render.js?v=ac1dea62"
+      "./js/afinador.js": "./js/afinador.js?v=c86744ca",
+      "./js/contacte.js": "./js/contacte.js?v=c86744ca",
+      "./js/fingering-svg.js": "./js/fingering-svg.js?v=c86744ca",
+      "./js/fingerings.js": "./js/fingerings.js?v=c86744ca",
+      "./js/library.js": "./js/library.js?v=c86744ca",
+      "./js/midi-export.js": "./js/midi-export.js?v=c86744ca",
+      "./js/musicxml.js": "./js/musicxml.js?v=c86744ca",
+      "./js/player.js": "./js/player.js?v=c86744ca",
+      "./js/render.js": "./js/render.js?v=c86744ca"
     }
   }
   </script>
   <!-- importmap:fi -->
-  <script type="module" src="js/main.js?v=ac1dea62"></script>
+  <script type="module" src="js/main.js?v=c86744ca"></script>
 </head>
 <body>
   <header class="capcalera">
@@ -52,6 +52,7 @@
         <h2 id="llibreria-titol">Tria una cançó</h2>
         <input type="search" id="cerca" placeholder="Cerca…" aria-label="Cerca una cançó" autocomplete="off">
       </div>
+      <div class="filtres" id="filtres" role="group" aria-label="Filtra per tipus" hidden></div>
       <div id="llista" class="llista" aria-live="polite"></div>
       <p class="buit" id="llista-buida" hidden>No hi ha cap cançó que coincideixi amb la cerca.</p>
 
@@ -67,10 +68,15 @@
     </section>
 
     <p class="error" id="error" role="alert" hidden></p>
+    <p class="benvinguda" id="benvinguda">Tria una cançó de la llista per veure-la, escoltar-la i aprendre'n la digitació.</p>
 
     <section class="obra" id="obra" hidden>
       <div class="reproductor" id="reproductor">
         <div class="reproductor-fila">
+          <a class="torna" id="torna" href="#/" aria-label="Torna a la llista de cançons">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Cançons</span>
+          </a>
           <button type="button" class="boto-play" id="play" aria-label="Reprodueix">
             <svg viewBox="0 0 24 24" aria-hidden="true" class="icona-play"><path d="M8 5.5v13l11-6.5z"/></svg>
             <svg viewBox="0 0 24 24" aria-hidden="true" class="icona-pausa"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
@@ -82,44 +88,55 @@
             <h2 id="titol"></h2>
             <span class="estat" id="estat" aria-live="polite"></span>
           </div>
+          <button type="button" class="boto mes-boto" id="mes-boto" aria-expanded="false" aria-controls="mes-opcions" aria-label="Més opcions" title="Més opcions">⋯</button>
         </div>
         <div class="reproductor-fila controls">
           <div class="veus" id="veus" role="radiogroup" aria-label="Veu" hidden></div>
-          <div class="vista" id="vista" role="group" aria-label="Mostra">
-            <label class="opcio"><input type="checkbox" data-vista="pentagrama" checked><span>Pentagrama</span></label>
-            <label class="opcio"><input type="checkbox" data-vista="noms" checked><span>Notes</span></label>
-            <label class="opcio"><input type="checkbox" data-vista="digitacio" checked><span>Digitació</span></label>
+          <!-- A l'ordinador, en línia amb la resta; al mòbil, dins el menú «⋯» (css/styles.css). -->
+          <div class="mes-opcions" id="mes-opcions">
+            <div class="vista" id="vista" role="group" aria-label="Mostra">
+              <label class="opcio"><input type="checkbox" data-vista="pentagrama" checked><span>Pentagrama</span></label>
+              <label class="opcio"><input type="checkbox" data-vista="noms" checked><span>Notes</span></label>
+              <label class="opcio"><input type="checkbox" data-vista="digitacio" checked><span>Digitació</span></label>
+            </div>
+            <div class="mida" role="group" aria-label="Mida de la partitura">
+              <button type="button" id="mida-menys" aria-label="Partitura més petita" title="Partitura més petita">A−</button>
+              <button type="button" id="mida-mes" aria-label="Partitura més gran" title="Partitura més gran">A+</button>
+            </div>
+            <label class="tempo">
+              <span class="etiqueta">Velocitat</span>
+              <input type="range" id="tempo" min="40" max="130" step="5" value="100">
+              <output id="tempo-valor">100 %</output>
+            </label>
+            <label class="check"><input type="checkbox" id="bucle"> Repeteix</label>
+            <label class="timbre">
+              <span class="etiqueta">So</span>
+              <select id="timbre" aria-label="So">
+                <option value="shanai">Gralla</option>
+                <option value="oboe">Oboè</option>
+                <option value="recorder">Flauta</option>
+              </select>
+            </label>
+            <button type="button" class="boto-text" id="midi"><span class="etiqueta">Descarrega </span>MIDI</button>
+            <button type="button" class="boto-text" id="imprimeix" title="Imprimeix la vista actual en A5 apaisat (per al faristol)">Imprimeix</button>
           </div>
-          <label class="tempo">
-            <span class="etiqueta">Velocitat</span>
-            <input type="range" id="tempo" min="40" max="130" step="5" value="100">
-            <output id="tempo-valor">100 %</output>
-          </label>
-          <label class="check"><input type="checkbox" id="bucle"> Repeteix</label>
-          <label class="timbre">
-            <span class="etiqueta">So</span>
-            <select id="timbre" aria-label="So">
-              <option value="shanai">Gralla</option>
-              <option value="oboe">Oboè</option>
-              <option value="recorder">Flauta</option>
-            </select>
-          </label>
-          <button type="button" class="boto-text" id="midi"><span class="etiqueta">Descarrega </span>MIDI</button>
-          <button type="button" class="boto-text" id="imprimeix" title="Imprimeix la vista actual en A5 apaisat (per al faristol)">Imprimeix</button>
         </div>
       </div>
 
       <div class="avis" id="avis" hidden></div>
 
-      <div class="llegenda" aria-label="Llegenda de la digitació">
-        <span><svg viewBox="0 0 14 14" width="14" height="14"><circle class="f-tancat" cx="7" cy="7" r="5.5"/></svg> forat tancat</span>
-        <span><svg viewBox="0 0 14 14" width="14" height="14"><circle class="f-obert" cx="7" cy="7" r="5.5"/></svg> forat obert</span>
-        <span><svg viewBox="0 0 14 14" width="14" height="14"><circle class="f-obert" cx="7" cy="7" r="5.5"/><path class="f-tancat" d="M7,1.5 A5.5,5.5 0 0 0 7,12.5 Z"/></svg> mig forat</span>
-        <span>El forat de dalt a l'esquerra és el del <strong>polze</strong> (darrere). A dalt, mà esquerra; a baix, mà dreta.</span>
-        <span><span class="bufa">fort</span> notes agudes: bufa amb més pressió</span>
-      </div>
+      <details class="llegenda-caixa" id="llegenda">
+        <summary>Com es llegeix la digitació</summary>
+        <div class="llegenda" aria-label="Llegenda de la digitació">
+          <span><svg viewBox="0 0 14 14" width="14" height="14"><circle class="f-tancat" cx="7" cy="7" r="5.5"/></svg> forat tancat</span>
+          <span><svg viewBox="0 0 14 14" width="14" height="14"><circle class="f-obert" cx="7" cy="7" r="5.5"/></svg> forat obert</span>
+          <span><svg viewBox="0 0 14 14" width="14" height="14"><circle class="f-obert" cx="7" cy="7" r="5.5"/><path class="f-tancat" d="M7,1.5 A5.5,5.5 0 0 0 7,12.5 Z"/></svg> mig forat</span>
+          <span>El forat de dalt a l'esquerra és el del <strong>polze</strong> (darrere). A dalt, mà esquerra; a baix, mà dreta.</span>
+          <span><span class="bufa">fort</span> notes agudes: bufa amb més pressió</span>
+        </div>
+      </details>
 
-      <div class="partitura" id="partitura"></div>
+      <div class="partitura" id="partitura"><div class="partitura-dins" id="partitura-dins"></div></div>
       <p class="pista">Toca una nota o la seva digitació per escoltar-la i començar a reproduir des d'allà.</p>
     </section>
 
