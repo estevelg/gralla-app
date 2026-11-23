@@ -98,10 +98,12 @@ a { color: var(--accent); }
   color: inherit;
   text-decoration: none;
 }
-/* Etiqueta «beta» al costat del títol: la web encara canvia sovint. */
+/* Etiqueta «beta» al costat del títol: la web encara canvia sovint. Amb overflow: hidden, la línia de base
+   d'un inline-block és la seva vora inferior: així el contorn queda just sobre la línia de base del títol. */
 .beta {
   display: inline-block;
-  vertical-align: .9em;
+  vertical-align: baseline;
+  overflow: hidden;
   margin-left: 4px;
   padding: 1px 8px;
   border: 1.5px solid var(--accent);
