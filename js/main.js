@@ -41,6 +41,7 @@ const els = {
   mesBoto: $('#mes-boto'),
   mesOpcions: $('#mes-opcions'),
   reproductor: $('#reproductor'),
+  benvinguda: $('#benvinguda'),
 };
 
 // Pantalles estretes o baixes (mòbil, tauleta vertical, mòbil apaisat): la llibreria i la cançó són dues
@@ -145,11 +146,22 @@ async function initLibrary() {
     catalog = await loadCatalog();
     const filter = renderCatalog(els.llista, els.llistaBuida, catalog, (entry) => loadFromLibrary(entry));
     els.cerca.addEventListener('input', () => filter(els.cerca.value));
+    alignWelcome();
     openFromHash();
   } catch (err) {
     console.error(err);
     showError(err.message);
   }
+}
+
+// A l'ordinador, el requadre «Tria una cançó de la llista…» comença a la mateixa alçada que la primera cançó
+// de la llista de l'esquerra (les dues columnes comencen al mateix punt; la diferència és la capçalera de la llista).
+function alignWelcome() {
+  els.benvinguda.style.marginTop = '';
+  const first = els.llista.querySelector('.targeta');
+  if (narrow.matches || !first) return;
+  const llibreria = els.llista.closest('.llibreria');
+  els.benvinguda.style.marginTop = `${Math.round(first.getBoundingClientRect().top - llibreria.getBoundingClientRect().top)}px`;
 }
 
 function setPiece(p, voice = 0, { scroll = true } = {}) {
@@ -506,6 +518,7 @@ let lastWidth = els.partitura.clientWidth;
 window.addEventListener('resize', () => {
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => {
+    alignWelcome();
     if (els.partitura.clientWidth !== lastWidth) {
       lastWidth = els.partitura.clientWidth;
       draw();

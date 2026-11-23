@@ -199,6 +199,8 @@ a { color: var(--accent); }
   text-align: center;
 }
 body.amb-obra .benvinguda { display: none; }
+/* Les opcions avançades (transposar) només tenen sentit amb una cançó oberta. */
+body:not(.amb-obra) .avancat { display: none; }
 body:not(.amb-obra) #obra { display: none; }
 .buit { color: var(--ink-soft); }
 
