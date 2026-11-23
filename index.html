@@ -8,28 +8,27 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=c86744ca">
-  <link rel="stylesheet" href="css/print.css?v=c86744ca" media="print">
+  <link rel="stylesheet" href="css/styles.css?v=86780e21">
+  <link rel="stylesheet" href="css/print.css?v=86780e21" media="print">
   <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.5/build/cjs/vexflow.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
   <!-- importmap:inici -->
   <script type="importmap">
   {
     "imports": {
-      "./js/afinador.js": "./js/afinador.js?v=c86744ca",
-      "./js/contacte.js": "./js/contacte.js?v=c86744ca",
-      "./js/fingering-svg.js": "./js/fingering-svg.js?v=c86744ca",
-      "./js/fingerings.js": "./js/fingerings.js?v=c86744ca",
-      "./js/library.js": "./js/library.js?v=c86744ca",
-      "./js/midi-export.js": "./js/midi-export.js?v=c86744ca",
-      "./js/musicxml.js": "./js/musicxml.js?v=c86744ca",
-      "./js/player.js": "./js/player.js?v=c86744ca",
-      "./js/render.js": "./js/render.js?v=c86744ca"
+      "./js/afinador.js": "./js/afinador.js?v=86780e21",
+      "./js/contacte.js": "./js/contacte.js?v=86780e21",
+      "./js/fingering-svg.js": "./js/fingering-svg.js?v=86780e21",
+      "./js/fingerings.js": "./js/fingerings.js?v=86780e21",
+      "./js/library.js": "./js/library.js?v=86780e21",
+      "./js/midi-export.js": "./js/midi-export.js?v=86780e21",
+      "./js/musicxml.js": "./js/musicxml.js?v=86780e21",
+      "./js/player.js": "./js/player.js?v=86780e21",
+      "./js/render.js": "./js/render.js?v=86780e21"
     }
   }
   </script>
   <!-- importmap:fi -->
-  <script type="module" src="js/main.js?v=c86744ca"></script>
+  <script type="module" src="js/main.js?v=86780e21"></script>
 </head>
 <body>
   <header class="capcalera">
@@ -55,16 +54,6 @@
       <div class="filtres" id="filtres" role="group" aria-label="Filtra per tipus" hidden></div>
       <div id="llista" class="llista" aria-live="polite"></div>
       <p class="buit" id="llista-buida" hidden>No hi ha cap cançó que coincideixi amb la cerca.</p>
-
-      <details class="propia">
-        <summary>Tens un fitxer MusicXML propi?</summary>
-        <label class="zona" id="zona">
-          <input type="file" id="fitxer" accept=".musicxml,.xml,.mxl" hidden>
-          <span class="zona-icona" aria-hidden="true">♪</span>
-          <span><strong>Tria un fitxer</strong> o arrossega'l aquí</span>
-          <span class="zona-ajuda">Format MusicXML (.musicxml, .mxl, .xml)</span>
-        </label>
-      </details>
     </section>
 
     <p class="error" id="error" role="alert" hidden></p>

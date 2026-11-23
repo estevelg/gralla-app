@@ -1,6 +1,6 @@
 # Que sonin les gralles!
 
-Web-app per a principiants de gralla seca: tries una cançó de la llibreria (o carregues un MusicXML propi) i
+Web-app per a principiants de gralla seca: tries una cançó de la llibreria i
 - la llibreria és una llista amb cercador i filtres per tipus (cercavila, pasdoble…); a l'ordinador queda en una
   barra lateral i al mòbil és una pantalla pròpia (s'hi torna amb «← Cançons»),
 - la partitura es redueix sola a la pantalla (al mòbil hi caben 2 o 3 compassos per fila) i es pot fer més petita o
@@ -100,7 +100,7 @@ límit de 3 missatges/hora i 5/dia per IP i de 20 al dia en total, i neteja de c
 | --- | --- |
 | `js/fingerings.js` | Taula de digitacions (MIDI escrit → 7 forats) i notes on cal bufar més fort |
 | `js/fingering-svg.js` | Dibuix d'una digitació |
-| `js/musicxml.js` | Lectura de MusicXML/MXL, repeticions i caselles, D.S./D.C. al Fine, canvis de tempo, transposició |
+| `js/musicxml.js` | Lectura de MusicXML, repeticions i caselles, D.S./D.C. al Fine, canvis de tempo, transposició |
 | `js/render.js` | Pentagrama amb VexFlow + nom i digitació sota cada nota |
 | `js/player.js` | Reproducció amb Web Audio (smplr, sons General MIDI) |
 | `js/midi-export.js` | Exportació a fitxer MIDI |
@@ -111,4 +111,4 @@ límit de 3 missatges/hora i 5/dia per IP i de 20 al dia en total, i neteja de c
 | `docs/pla-ampliacio.md` | Pla per si s'hi afegeixen més colles i molt més repertori (fases 1-3) |
 | `partitures/` | Llibreria de partitures i catàleg `index.json` |
 
-Llibreries (per CDN): VexFlow 4, JSZip, smplr.
+Llibreries (per CDN): VexFlow 4, smplr.

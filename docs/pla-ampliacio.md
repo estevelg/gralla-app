@@ -59,8 +59,7 @@ automàtica al mòbil no s'ha fet: amb el zoom ja no cal.
   - Així no cal fer scroll per sobre de la llista per arribar a la partitura.
 - **Filtres:** xips sota el cercador, de moment per **tipus** (cercavila, ball de gegants, pasdoble, popular…).
   `filter()` a `js/library.js` ja busca per paraules. N'hi ha prou d'afegir-hi el filtre per xip.
-- **Peces de suport:** «Tens un fitxer MusicXML propi?» i la llegenda de digitació passen a desplegables al final de
-  la llibreria i de la cançó.
+- **Peces de suport:** la llegenda de digitació passa a desplegable.
 
 **Fitxers:** `index.html`, `css/styles.css` (maquetació i media queries), `js/library.js`, `js/main.js`
 (`draw`, `setPiece`, i que `openFromHash` no faci `scrollIntoView` al mòbil) i `js/render.js` (cap canvi de

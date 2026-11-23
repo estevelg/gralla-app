@@ -1,36 +1,8 @@
-// Lectura de MusicXML (.musicxml / .xml) i MusicXML comprimit (.mxl).
+// Lectura de MusicXML (.musicxml / .xml).
 // Només es llegeix la primera part i la primera veu: la gralla és monòdica.
 
 const STEP_SEMITONES = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
 const BEAT_UNIT_QUARTERS = { whole: 4, half: 2, quarter: 1, eighth: 0.5, '16th': 0.25 };
-
-export async function readScoreFile(file) {
-  const name = file.name.toLowerCase();
-  let xmlText;
-  if (name.endsWith('.mxl')) {
-    xmlText = await unzipMxl(await file.arrayBuffer());
-  } else {
-    xmlText = await file.text();
-  }
-  const score = parseMusicXML(xmlText);
-  if (!score.title) score.title = file.name.replace(/\.(musicxml|xml|mxl)$/i, '');
-  return score;
-}
-
-async function unzipMxl(buffer) {
-  const zip = await window.JSZip.loadAsync(buffer);
-  let path = null;
-  const container = zip.file('META-INF/container.xml');
-  if (container) {
-    const doc = new DOMParser().parseFromString(await container.async('string'), 'application/xml');
-    path = doc.querySelector('rootfile')?.getAttribute('full-path');
-  }
-  if (!path) {
-    path = Object.keys(zip.files).find((p) => !p.startsWith('META-INF') && /\.(xml|musicxml)$/i.test(p));
-  }
-  if (!path || !zip.file(path)) throw new Error("No s'ha trobat la partitura dins del fitxer .mxl.");
-  return zip.file(path).async('string');
-}
 
 const childText = (el, sel) => el.querySelector(sel)?.textContent.trim();
 const childNum = (el, sel) => {

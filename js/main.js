@@ -1,4 +1,4 @@
-import { readScoreFile, parseMusicXML, transposeScore } from './musicxml.js';
+import { parseMusicXML, transposeScore } from './musicxml.js';
 import { renderScore } from './render.js';
 import { getFingering, inRange, SO_REAL, LOWEST, HIGHEST } from './fingerings.js';
 import { fingeringSVG } from './fingering-svg.js';
@@ -11,11 +11,9 @@ import { iniciaContacte } from './contacte.js';
 const $ = (sel) => document.querySelector(sel);
 
 const els = {
-  zona: $('#zona'),
   llista: $('#llista'),
   llistaBuida: $('#llista-buida'),
   cerca: $('#cerca'),
-  fitxer: $('#fitxer'),
   error: $('#error'),
   obra: $('#obra'),
   titol: $('#titol'),
@@ -75,20 +73,6 @@ function tempoText() {
 function showError(msg) {
   els.error.textContent = msg;
   els.error.hidden = !msg;
-}
-
-async function loadFile(file) {
-  try {
-    showError('');
-    const score = await readScoreFile(file);
-    currentEntry = null;
-    setPiece({ title: score.title, voices: [{ nom: 'Gralla', score: tagVoice(score, 0) }] }, 0);
-    markSelected(els.llista, null);
-    history.replaceState(null, '', location.pathname);
-  } catch (err) {
-    console.error(err);
-    showError(err.message || "No s'ha pogut llegir la partitura.");
-  }
 }
 
 let catalog = [];
@@ -469,23 +453,6 @@ function buildTable() {
 }
 
 // ---------- Esdeveniments ----------
-
-els.fitxer.addEventListener('change', () => {
-  const file = els.fitxer.files[0];
-  if (file) loadFile(file);
-  els.fitxer.value = '';
-});
-
-['dragenter', 'dragover'].forEach((type) => els.zona.addEventListener(type, (e) => {
-  e.preventDefault();
-  els.zona.classList.add('sobre');
-}));
-['dragleave', 'drop'].forEach((type) => els.zona.addEventListener(type, () => els.zona.classList.remove('sobre')));
-els.zona.addEventListener('drop', (e) => {
-  e.preventDefault();
-  const file = e.dataTransfer.files[0];
-  if (file) loadFile(file);
-});
 
 window.addEventListener('hashchange', () => openFromHash());
 

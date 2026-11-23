@@ -202,27 +202,6 @@ body.amb-obra .benvinguda { display: none; }
 body:not(.amb-obra) #obra { display: none; }
 .buit { color: var(--ink-soft); }
 
-.propia { margin-top: 18px; color: var(--ink-soft); }
-.propia summary { color: var(--ink); font-weight: 600; }
-.propia .zona { margin-top: 10px; }
-
-.zona {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 22px 16px;
-  border: 2px dashed var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
-  text-align: center;
-  cursor: pointer;
-  transition: border-color .15s, background .15s;
-}
-.zona:hover, .zona.sobre { border-color: var(--accent); background: var(--accent-soft); }
-.zona-icona { font-size: 1.8rem; line-height: 1; color: var(--accent); }
-.zona-ajuda { color: var(--ink-soft); font-size: .9rem; }
-
 details summary { cursor: pointer; font-weight: 700; }
 
 .error {
