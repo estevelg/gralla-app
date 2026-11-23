@@ -11,8 +11,7 @@ Web-app per a principiants de gralla seca: tries una cançó de la llibreria (o 
 - hi ha un **afinador de gralla** (botó «Afinador»): tries la nota (Sol greu, Do, Sol agut o qualsevol altra), actives el micròfon i una barra mostra la desviació en cents; és verda dins de ±10 cents,
 - pots **imprimir-la** (botó «Imprimeix»): A5 apaisat, amb el títol i la vista, la veu i la transposició que tinguis seleccionades, per posar-la al faristol; la mida es tria sola (entre el 70 % i el 40 %) perquè tota la cançó càpiga, si pot ser, en un sol full,
 
-Les digitacions surten de la taula de la gralla Bessó ([pacobesso.net](https://www.pacobesso.net)),
-de Sol a Re agut. Per a Re♯ i La♯ es fa servir la posició normal.
+Les digitacions cobreixen de Sol a Re agut. Per a Re♯ i La♯ es fa servir la posició normal.
 
 ## Obrir-la en local
 
